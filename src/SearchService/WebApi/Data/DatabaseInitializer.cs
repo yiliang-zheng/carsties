@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using MongoDB.Entities;
 using WebApi.Models;
+using WebApi.Service;
 
 namespace WebApi.Data;
 
@@ -20,25 +21,12 @@ public class DatabaseInitializer
             .CreateAsync();
 
         var count = await DB.CountAsync<Item>();
-        if (count == 0)
+        using var scope = app.Services.CreateScope();
+        var httpClient = scope.ServiceProvider.GetRequiredService<AuctionSvcHttpClient>();
+        if (httpClient is not null)
         {
-            var itemData = await File.ReadAllTextAsync("Data/auctions.json");
-            try
-            {
-                var items = JsonSerializer.Deserialize<List<Item>>(
-                    itemData,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                if (items is { Count: > 0 }) await DB.SaveAsync(items);
-            }
-            catch (Exception)
-            {
-                //ignored
-            }
-
+            var auctions = await httpClient.GetItemsForSearchDb();
+            await DB.SaveAsync(auctions);
         }
     }
 }

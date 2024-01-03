@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="FastEndpoints" Version="5.20.1" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0" />
     <PackageReference Include="MongoDB.Entities" Version="23.0.1" />
   </ItemGroup>
 
