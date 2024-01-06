@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Domain.Auction;
 using Infrastructure.Interceptors;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
@@ -19,5 +20,8 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 }
