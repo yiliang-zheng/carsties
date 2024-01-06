@@ -51,4 +51,21 @@ public class SearchRepository : ISearchRepository
         var pageResult = new SearchResult(await result.ExecuteAsync(token));
         return pageResult;
     }
+
+    public async Task DeleteItem(Guid id)
+    {
+        await DB.DeleteAsync<Item>(id);
+    }
+
+    public async Task UpdateItem(Guid id, string make, string model, string color, int mileage, int year)
+    {
+        await DB.Update<Item>()
+            .MatchID(id)
+            .Modify(p => p.Make, make)
+            .Modify(p => p.Model, model)
+            .Modify(p => p.Color, color)
+            .Modify(p => p.Mileage, mileage)
+            .Modify(p => p.Year, year)
+            .ExecuteAsync();
+    }
 }

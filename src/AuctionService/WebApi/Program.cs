@@ -2,6 +2,7 @@ using System.Reflection;
 using Application;
 using FastEndpoints;
 using Infrastructure;
+using MassTransit;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,19 @@ builder.Services.AddFastEndpoints();
 builder.Services.AddAutoMapper(
     Assembly.GetAssembly(typeof(Program))
 );
+builder.Services.AddMassTransit(config =>
+{
+    config.AddEntityFrameworkOutbox<AppDbContext>(outboxConfigurator =>
+    {
+        outboxConfigurator.QueryDelay = TimeSpan.FromSeconds(10);
+        outboxConfigurator.UsePostgres();
+        outboxConfigurator.UseBusOutbox();
+    });
+    config.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 
 var app = builder.Build();

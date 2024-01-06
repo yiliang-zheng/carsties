@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 using Ardalis.GuardClauses;
-using Domain.Auction.Event;
 using Shared.Domain;
+using Shared.Domain.Events;
 using Shared.Domain.Interface;
 
 namespace Domain.Auction;
@@ -27,8 +27,9 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
 
     public Item Item { get; private set; }
 
-    public Auction(int reservePrice, string seller, string winner, int? soldAmount, int? currentHighBid, DateTime auctionEnd)
+    public Auction(Guid id,int reservePrice, string seller, string winner, int? soldAmount, int? currentHighBid, DateTime auctionEnd)
     {
+        Id = id;
         ReservePrice = Guard.Against.NegativeOrZero(reservePrice, nameof(reservePrice));
         Seller = Guard.Against.NullOrEmpty(seller, nameof(seller));
         Winner = winner;
@@ -60,19 +61,22 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
             mileage,
             year
         );
-        this.RegisterDomainEvent(new AuctionUpdated(
-            this.Id,
-            this.Item.Make,
-            this.Item.Model,
-            this.Item.Color,
-            this.Item.Mileage,
-            this.Item.Year
-            ));
+        this.RegisterDomainEvent(new AuctionUpdated{
+            Id =this.Id,
+            Make = this.Item.Make,
+            Model = this.Item.Model,
+            Color = this.Item.Color,
+            Mileage = this.Item.Mileage,
+            Year = this.Item.Year
+            });
     }
 
     public void MarkDeleted()
     {
-        this.RegisterDomainEvent(new AuctionDeleted(this.Id));
+        this.RegisterDomainEvent(new AuctionDeleted
+        {
+            Id = this.Id,
+        });
     }
 
     public void UpdateStatus(Status newStatus)

@@ -12,5 +12,5 @@ public abstract class EntityBase
 
     public void RegisterDomainEvent(DomainEventBase domainEvent) => this._domainEvents.Add(domainEvent);
 
-    internal void ClearDomainEvents() => this._domainEvents.Clear();
+    public void ClearDomainEvents() => this._domainEvents.Clear();
 }

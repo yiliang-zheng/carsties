@@ -3,6 +3,7 @@ using Infrastructure.Data;
 using Infrastructure.Data.Repository;
 using Infrastructure.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Domain.Interface;
@@ -13,13 +14,14 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<AuditableEntityInterceptor>();
+            services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+            services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
             services.AddScoped<IRepository<Auction>, AuctionRepository>();
             services.AddScoped<DatabaseInitializer>();
             services.AddDbContext<AppDbContext>((sp,opts) =>
             {
                 opts.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-                opts.AddInterceptors(sp.GetRequiredService<AuditableEntityInterceptor>());
+                opts.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
             });
 
             return services;

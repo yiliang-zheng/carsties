@@ -19,4 +19,6 @@ public class CreateAuctionRequest
     public string ImageUrl { get; set; }
 
     public DateTime AuctionEnd { get; set; }
+
+    public string Seller { get; set; }
 }

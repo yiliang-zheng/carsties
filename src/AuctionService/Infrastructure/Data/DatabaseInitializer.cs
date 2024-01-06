@@ -22,6 +22,7 @@ public class DatabaseInitializer
 
             // 1 Ford GT
             var fordGt = new Auction(
+                id: Guid.NewGuid(), 
                 reservePrice: 20000,
                 seller: "bob",
                 winner: null,
@@ -40,6 +41,7 @@ public class DatabaseInitializer
 
             // 2 Bugatti Veyron
             var bugatti = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 90000,
                 seller: "alice",
                 winner: null,
@@ -59,6 +61,7 @@ public class DatabaseInitializer
 
             // 3 Ford mustang
             var fordMustang = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 40000,
                 seller: "bob",
                 winner: null,
@@ -78,6 +81,7 @@ public class DatabaseInitializer
 
             // 4 Mercedes SLK
             var mercedes = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 50000,
                 seller: "tom",
                 winner: null,
@@ -98,6 +102,7 @@ public class DatabaseInitializer
 
             // 5 BMW X1
             var bmw = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 20000,
                 seller: "alice",
                 winner: null,
@@ -117,6 +122,7 @@ public class DatabaseInitializer
 
             // 6 Ferrari spider
             var ferrariSpider = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 200000,
                 seller: "bob",
                 winner: null,
@@ -136,6 +142,7 @@ public class DatabaseInitializer
 
             // 7 Ferrari F-430
             var ferrari430 = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 150000,
                 seller: "alice",
                 winner: null,
@@ -155,6 +162,7 @@ public class DatabaseInitializer
 
             // 8 Audi R8
             var audiR8 = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 60000,
                 seller: "bob",
                 winner: null,
@@ -174,6 +182,7 @@ public class DatabaseInitializer
 
             // 9 Audi TT
             var audiTt = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 20000,
                 seller: "tom",
                 winner: null,
@@ -193,6 +202,7 @@ public class DatabaseInitializer
 
             // 10 Ford Model T
             var fordModelT = new Auction(
+                id: Guid.NewGuid(),
                 reservePrice: 20000,
                 seller: "bob",
                 winner: null,

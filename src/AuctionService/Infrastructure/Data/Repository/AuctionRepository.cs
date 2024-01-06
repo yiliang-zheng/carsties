@@ -1,7 +1,6 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using Domain.Auction;
-using Domain.Auction.Event;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.Domain.Interface;

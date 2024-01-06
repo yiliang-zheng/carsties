@@ -26,7 +26,7 @@ public class DatabaseInitializer
         if (httpClient is not null)
         {
             var auctions = await httpClient.GetItemsForSearchDb();
-            await DB.SaveAsync(auctions);
+            if (auctions is { Count: > 0 }) await DB.SaveAsync(auctions);
         }
     }
 }

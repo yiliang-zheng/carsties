@@ -1,5 +1,4 @@
 ﻿using Domain.Auction;
-using Domain.Auction.Event;
 using Domain.Auction.Specification;
 using FluentResults;
 using MediatR;

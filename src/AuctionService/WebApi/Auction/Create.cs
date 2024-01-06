@@ -18,10 +18,12 @@ public class Create : Endpoint<CreateAuctionRequest, AuctionDto>
     public override void Configure()
     {
         Post(CreateAuctionRequest.Route);
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(CreateAuctionRequest req, CancellationToken ct)
     {
+        req.Seller = "james";
         var command = this._mapper.Map<CreateAuctionCommand>(req);
         var result = await this._sender.Send(command, ct);
 

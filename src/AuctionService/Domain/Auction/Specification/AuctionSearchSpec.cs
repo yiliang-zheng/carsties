@@ -8,10 +8,11 @@ public class AuctionSearchSpec : Specification<Auction>
     {
         if (fromDate is not null && fromDate != default(DateTime))
         {
+            var utcDate = DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc);
             Query.Where(p => (p.UpdatedAt != null &&
-                              p.UpdatedAt >= fromDate) ||
+                              p.UpdatedAt >= utcDate) ||
                              (p.UpdatedAt == null &&
-                              p.CreatedAt >= fromDate)
+                              p.CreatedAt >= utcDate)
             );
         }
 

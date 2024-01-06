@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Domain.Auction;
-using Domain.Auction.Event;
 using FluentResults;
 using MediatR;
+using Shared.Domain.Events;
 using Shared.Domain.Interface;
 
 namespace Application.CreateAuction;
@@ -21,6 +21,7 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
     public async Task<Result<AuctionDto>> Handle(CreateAuctionCommand request, CancellationToken cancellationToken)
     {
         var auction = new Auction(
+            Guid.NewGuid(), 
             request.ReservePrice,
             request.Seller,
             string.Empty,
@@ -38,26 +39,28 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
             request.ImageUrl
         );
 
-        auction.RegisterDomainEvent(new AuctionCreated(
-            auction.Id,
-            auction.CreatedAt,
-            auction.UpdatedAt,
-            auction.AuctionEnd,
-            auction.Seller,
-            auction.Winner,
-            auction.Item.Make,
-            auction.Item.Model,
-            auction.Item.Year,
-            auction.Item.Color,
-            auction.Item.Mileage,
-            auction.Item.ImageUrl,
-            auction.AuctionStatus.Name,
-            auction.ReservePrice,
-            auction.SoldAmount,
-            auction.CurrentHighBid
-            ));
-
+        auction.RegisterDomainEvent(new AuctionCreated
+        {
+            Id = auction.Id,
+            CreatedAt = auction.CreatedAt,
+            UpdatedAt = auction.UpdatedAt,
+            AuctionEnd = auction.AuctionEnd,
+            Seller = auction.Seller,
+            Winner = auction.Winner,
+            Make = auction.Item.Make,
+            Model = auction.Item.Model,
+            Year = auction.Item.Year,
+            Color = auction.Item.Color,
+            Mileage = auction.Item.Mileage,
+            ImageUrl = auction.Item.ImageUrl,
+            Status = auction.AuctionStatus.Name,
+            ReservePrice = auction.ReservePrice,
+            SoldAmount = auction.SoldAmount,
+            CurrentHighBid = auction.CurrentHighBid
+        });
         await this._repository.AddAsync(auction, cancellationToken);
+
+        
         var dto = this._mapper.Map<AuctionDto>(auction);
         return dto;
     }

@@ -6,4 +6,8 @@ namespace WebApi.Repositories;
 public interface ISearchRepository
 {
     Task<SearchResult> SearchItems(Query query, CancellationToken token);
+
+    Task DeleteItem(Guid id);
+
+    Task UpdateItem(Guid id, string make, string model, string color, int mileage, int year);
 }

@@ -16,4 +16,8 @@
     <ProjectReference Include="..\..\Common\Shared.Domain\Shared.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Auction\Event\" />
+  </ItemGroup>
+
 </Project>
