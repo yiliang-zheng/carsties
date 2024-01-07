@@ -31,16 +31,14 @@ public class AuctionRepository : IRepository<Auction>
     public async Task<Auction> AddAsync(Auction entity, CancellationToken cancellationToken = default)
     {
         await this._dbContext.Auctions.AddAsync(entity, cancellationToken);
-        await this._dbContext.SaveChangesAsync(cancellationToken);
         
-
         return entity;
     }
 
-    public async Task UpdateAsync(Auction entity, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(Auction entity, CancellationToken cancellationToken = default)
     {
         this._dbContext.Auctions.Update(entity);
-        await this._dbContext.SaveChangesAsync(cancellationToken);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(Auction entity, CancellationToken cancellationToken = default)
@@ -51,7 +49,6 @@ public class AuctionRepository : IRepository<Auction>
             this._dbContext.Items.RemoveRange(items);
         }
         this._dbContext.Auctions.Remove(entity);
-        await this._dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private IQueryable<Auction> ApplySpecification(ISpecification<Auction> specification)

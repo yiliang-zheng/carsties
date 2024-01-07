@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Shared.Constants.Extensions;
 using Shared.Domain;
 using Shared.Domain.Events;
@@ -10,11 +11,11 @@ namespace Infrastructure.Interceptors;
 
 public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
 {
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IServiceProvider _serviceProvider;
 
-    public DispatchDomainEventsInterceptor(IPublishEndpoint publishEndpoint)
+    public DispatchDomainEventsInterceptor(IServiceProvider serviceProvider)
     {
-        _publishEndpoint = publishEndpoint;
+        _serviceProvider = serviceProvider;
     }
 
     public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
@@ -35,6 +36,8 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
     public async Task DispatchDomainEvents(DbContext? context)
     {
         if (context == null) return;
+        using var scope = _serviceProvider.CreateScope();
+        var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 
         var entities = context.ChangeTracker
             .Entries<EntityBase>()
@@ -56,13 +59,13 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
                     case AuctionCreated auctionCreated:
                         var createdAt = pair.Key.GetPropertyValue<DateTime>(nameof(Auction.CreatedAt));
                         auctionCreated.CreatedAt = createdAt;
-                        await this._publishEndpoint.Publish(auctionCreated);
+                        await publishEndpoint.Publish(auctionCreated);
                         break;
                     case AuctionDeleted auctionDeleted:
-                        await this._publishEndpoint.Publish(auctionDeleted);
+                        await publishEndpoint.Publish(auctionDeleted);
                         break;
                     case AuctionUpdated auctionUpdated:
-                        await this._publishEndpoint.Publish(auctionUpdated);
+                        await publishEndpoint.Publish(auctionUpdated);
                         break;
                     default:
                         break;
