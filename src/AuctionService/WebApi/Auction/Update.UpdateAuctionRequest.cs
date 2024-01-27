@@ -4,7 +4,7 @@ namespace WebApi.Auction;
 
 public class UpdateAuctionRequest
 {
-    public const string Route = "/api/auctions/{Id}";
+    public const string Route = "/api/auction/{Id}";
 
     public Guid Id { get; set; }
 

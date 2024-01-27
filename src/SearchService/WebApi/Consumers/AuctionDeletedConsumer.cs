@@ -7,14 +7,16 @@ namespace WebApi.Consumers;
 public class AuctionDeletedConsumer:IConsumer<AuctionDeleted>
 {
     private readonly ISearchRepository _searchRepository;
+    private readonly ILogger<AuctionDeletedConsumer> _logger;
 
-    public AuctionDeletedConsumer(ISearchRepository searchRepository)
+    public AuctionDeletedConsumer(ISearchRepository searchRepository, ILogger<AuctionDeletedConsumer> logger)
     {
         _searchRepository = searchRepository;
+        _logger = logger;
     }
     public async Task Consume(ConsumeContext<AuctionDeleted> context)
     {
-        Console.WriteLine($"--> received AuctionDeleted event: {context.Message.Id}");
+        this._logger.LogInformation($"--> received AuctionDeleted event: {context.Message.Id}");
         await this._searchRepository.DeleteItem(context.Message.Id);
     }
 }

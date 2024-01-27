@@ -4,6 +4,8 @@ using FastEndpoints;
 using Infrastructure;
 using MassTransit;
 using Serilog;
+using Serilog.Filters;
+using WebApi.Consumer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +28,17 @@ builder.Services.AddMassTransit(config =>
         outboxConfigurator.UsePostgres();
         outboxConfigurator.UseBusOutbox();
     });
+    config.AddConsumersFromNamespaceContaining<AuctionCreatedFaultConsumer>();
+    config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
+
     config.UsingRabbitMq((context, cfg) =>
     {
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+        {
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
+
         cfg.ConfigureEndpoints(context);
     });
 });

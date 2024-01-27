@@ -19,6 +19,7 @@ public class Update: Endpoint<UpdateAuctionRequest, AuctionDto>
     public override void Configure()
     {
         Put(UpdateAuctionRequest.Route);
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(UpdateAuctionRequest req, CancellationToken ct)

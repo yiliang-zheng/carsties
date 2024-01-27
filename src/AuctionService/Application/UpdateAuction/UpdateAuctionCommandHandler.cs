@@ -11,11 +11,13 @@ public class UpdateAuctionCommandHandler : IRequestHandler<UpdateAuctionCommand,
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Auction> _repository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UpdateAuctionCommandHandler(IMapper mapper, IRepository<Auction> repository)
+    public UpdateAuctionCommandHandler(IMapper mapper, IRepository<Auction> repository, IUnitOfWork unitOfWork)
     {
         _mapper = mapper;
         _repository = repository;
+        _unitOfWork = unitOfWork;
     }
     public async Task<Result<AuctionDto>> Handle(UpdateAuctionCommand request, CancellationToken cancellationToken)
     {
@@ -32,6 +34,7 @@ public class UpdateAuctionCommandHandler : IRequestHandler<UpdateAuctionCommand,
         );
 
         await this._repository.UpdateAsync(auction, cancellationToken);
+        await this._unitOfWork.SaveChangesAsync(cancellationToken);
 
         var result = this._mapper.Map<AuctionDto>(auction);
         return Result.Ok(result);

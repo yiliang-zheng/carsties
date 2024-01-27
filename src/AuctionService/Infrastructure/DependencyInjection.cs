@@ -13,7 +13,7 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<AuditableEntityInterceptor>();
+            //services.AddSingleton<AuditableEntityInterceptor>();
 
             services.AddScoped<IRepository<Auction>, AuctionRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -21,8 +21,6 @@ namespace Infrastructure
             services.AddDbContext<AppDbContext>((sp, opts) =>
             {
                 opts.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-                var auditableInterceptor = sp.GetService<AuditableEntityInterceptor>();
-                opts.AddInterceptors(auditableInterceptor);
             });
 
             return services;

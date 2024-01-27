@@ -31,7 +31,6 @@ public class AuctionRepository : IRepository<Auction>
     public async Task<Auction> AddAsync(Auction entity, CancellationToken cancellationToken = default)
     {
         await this._dbContext.Auctions.AddAsync(entity, cancellationToken);
-        
         return entity;
     }
 

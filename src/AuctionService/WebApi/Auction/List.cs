@@ -6,8 +6,18 @@ using IMapper = AutoMapper.IMapper;
 
 namespace WebApi.Auction;
 
-public class List(ISender sender, ILogger<List> logger, IMapper mapper) : Endpoint<ListAuctionRequest, List<AuctionDto>>
+public class List : Endpoint<ListAuctionRequest, List<AuctionDto>>
 {
+    private readonly ILogger<WebApi.Auction.List> _logger;
+    private readonly ISender _sender;
+    private readonly IMapper _mapper;
+
+    public List(ILogger<List> logger, ISender sender, IMapper mapper)
+    {
+        _logger = logger;
+        _sender = sender;
+        _mapper = mapper;
+    }
     public override void Configure()
     {
         Get(ListAuctionRequest.Route);
@@ -16,13 +26,14 @@ public class List(ISender sender, ILogger<List> logger, IMapper mapper) : Endpoi
 
     public override async Task HandleAsync(ListAuctionRequest req, CancellationToken ct)
     {
-        var command = mapper.Map<SearchAuctionCommand>(req);
-        var result = await sender.Send(command, ct);
+        _logger.LogInformation($"Received List request at {DateTimeOffset.Now}");
+        var command = _mapper.Map<SearchAuctionCommand>(req);
+        var result = await _sender.Send(command, ct);
         if (result.IsFailed)
         {
             foreach (var error in result.Errors)
             {
-                logger.LogError(error.Message);
+                _logger.LogError(error.Message);
                 AddError(error.Message);
             }
 

@@ -46,29 +46,28 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
 
         
         await this._repository.AddAsync(auction, cancellationToken);
+        auction.RegisterDomainEvent(new AuctionCreated
+        {
+            Id = auction.Id,
+            CreatedAt = auction.CreatedAt,
+            UpdatedAt = auction.UpdatedAt,
+            AuctionEnd = auction.AuctionEnd,
+            Seller = auction.Seller,
+            Winner = auction.Winner,
+            Make = auction.Item.Make,
+            Model = auction.Item.Model,
+            Year = auction.Item.Year,
+            Color = auction.Item.Color,
+            Mileage = auction.Item.Mileage,
+            ImageUrl = auction.Item.ImageUrl,
+            Status = auction.AuctionStatus.Name,
+            ReservePrice = auction.ReservePrice,
+            SoldAmount = auction.SoldAmount,
+            CurrentHighBid = auction.CurrentHighBid
+        });
+
         await this._unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await this._publishEndpoint.Publish(new AuctionCreated
-            {
-                Id = auction.Id,
-                CreatedAt = auction.CreatedAt,
-                UpdatedAt = auction.UpdatedAt,
-                AuctionEnd = auction.AuctionEnd,
-                Seller = auction.Seller,
-                Winner = auction.Winner,
-                Make = auction.Item.Make,
-                Model = auction.Item.Model,
-                Year = auction.Item.Year,
-                Color = auction.Item.Color,
-                Mileage = auction.Item.Mileage,
-                ImageUrl = auction.Item.ImageUrl,
-                Status = auction.AuctionStatus.Name,
-                ReservePrice = auction.ReservePrice,
-                SoldAmount = auction.SoldAmount,
-                CurrentHighBid = auction.CurrentHighBid
-            },
-            cancellationToken
-        );
         var dto = this._mapper.Map<AuctionDto>(auction);
         return dto;
     }
