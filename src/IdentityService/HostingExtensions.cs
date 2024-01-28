@@ -1,4 +1,5 @@
 using Duende.IdentityServer;
+using FluentValidation;
 using IdentityService.Data;
 using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ namespace IdentityService
     {
         public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
         {
+            builder.Services.AddValidatorsFromAssemblyContaining<IdentityService.Pages.Account.Register.InputModelValidator>();
             builder.Services.AddRazorPages();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
