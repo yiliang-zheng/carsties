@@ -1,28 +1,30 @@
 ﻿using System.Security.Claims;
+using Domain.ApplicationUser;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Web.Data;
-using Web.Models;
 
-namespace Web
+namespace Infrastructure.Data
 {
-    public class SeedData
+    public class DatabaseInitializer
     {
-        public static void EnsureSeedData(WebApplication app)
-        {
-            using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
-            context.Database.Migrate();
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _dbContext;
 
-            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        public DatabaseInitializer(UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        {
+            _userManager = userManager;
+            _dbContext = dbContext;
+        }
+        public async Task Seed()
+        {
+            await _dbContext.Database.MigrateAsync();
 
             //do not create any user if there is already users in the user table
-            if (userMgr.Users.Any()) return;
+            if (await this._userManager.Users.AnyAsync()) return;
 
-            var alice = userMgr.FindByNameAsync("alice").Result;
-            if (alice == null)
+            var alice = await this._userManager.FindByNameAsync("alice");
+            if (alice is null)
             {
                 alice = new ApplicationUser
                 {
@@ -30,28 +32,26 @@ namespace Web
                     Email = "AliceSmith@email.com",
                     EmailConfirmed = true,
                 };
-                var result = userMgr.CreateAsync(alice, "Pass123$").Result;
+                var result = await _userManager.CreateAsync(alice, "Pass123$");
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);
                 }
 
-                result = userMgr.AddClaimsAsync(alice, new Claim[]{
+                result = await _userManager.AddClaimsAsync(alice, new Claim[]{
                     new Claim(JwtClaimTypes.Name, "Alice Smith")
-                }).Result;
+                });
+
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);
                 }
-                Log.Debug("alice created");
+                
             }
-            else
-            {
-                Log.Debug("alice already exists");
-            }
+            
 
-            var bob = userMgr.FindByNameAsync("bob").Result;
-            if (bob == null)
+            var bob = await _userManager.FindByNameAsync("bob");
+            if (bob is null)
             {
                 bob = new ApplicationUser
                 {
@@ -59,24 +59,19 @@ namespace Web
                     Email = "BobSmith@email.com",
                     EmailConfirmed = true
                 };
-                var result = userMgr.CreateAsync(bob, "Pass123$").Result;
+                var result = await this._userManager.CreateAsync(bob, "Pass123$");
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);
                 }
 
-                result = userMgr.AddClaimsAsync(bob, new Claim[]{
+                result = await _userManager.AddClaimsAsync(bob, new Claim[]{
                     new Claim(JwtClaimTypes.Name, "Bob Smith")
-                }).Result;
+                });
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);
                 }
-                Log.Debug("bob created");
-            }
-            else
-            {
-                Log.Debug("bob already exists");
             }
         }
     }

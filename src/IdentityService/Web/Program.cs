@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Infrastructure;
+using Serilog;
 using Web;
 
 Log.Logger = new LoggerConfiguration()
@@ -20,12 +21,11 @@ try
         .ConfigureServices()
         .ConfigurePipeline();
 
-    // this seeding is only for the template to bootstrap the DB and users.
-    // in production you will likely want a different approach.
-    Log.Information("Seeding database...");
-    SeedData.EnsureSeedData(app);
-    Log.Information("Done seeding database. Exiting.");
-
+    //seed data
+    if (!app.Environment.IsProduction())
+    {
+        await app.Services.InitializeDatabase();
+    }
     app.Run();
 }
 catch (Exception ex) when (

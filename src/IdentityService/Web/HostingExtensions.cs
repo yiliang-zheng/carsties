@@ -10,10 +10,9 @@ namespace Web
     {
         public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
         {
+            builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddValidatorsFromAssemblyContaining<InputModelValidator>();
             builder.Services.AddRazorPages();
-
-            builder.Services.AddInfrastructure(builder.Configuration);
 
             builder.Services
                 .AddIdentityServer(options =>
