@@ -1,8 +1,11 @@
+using System.Reflection;
+using Application;
 using Domain.ApplicationUser;
 using FluentValidation;
 using Infrastructure;
 using Serilog;
 using Web.Pages.Account.Register;
+using Web.Services;
 
 namespace Web
 {
@@ -10,8 +13,10 @@ namespace Web
     {
         public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
         {
+            builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddValidatorsFromAssemblyContaining<InputModelValidator>();
+            builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddRazorPages();
 
             builder.Services
@@ -28,7 +33,8 @@ namespace Web
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
-                .AddAspNetIdentity<ApplicationUser>();
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddProfileService<CarstiesProfileService>();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {

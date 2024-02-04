@@ -1,5 +1,7 @@
+using Application.RegisterUser;
 using Domain.ApplicationUser;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +14,12 @@ namespace Web.Pages.Account.Register
     public class Index : PageModel
     {
         private readonly IValidator<InputModel> _validator;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ISender _sender;
 
-        public Index(IValidator<InputModel> validator, UserManager<ApplicationUser> userManager)
+        public Index(IValidator<InputModel> validator, ISender sender)
         {
             _validator = validator;
-            _userManager = userManager;
+            _sender = sender;
         }
 
         [BindProperty]
@@ -50,6 +52,24 @@ namespace Web.Pages.Account.Register
                 return Page();
             }
 
+            var registerUserCommand = new RegisterUserCommand
+            {
+                Email = Input.Email,
+                FullName = Input.FullName,
+                Password = Input.Password,
+                UserName = Input.Username
+            };
+            var result = await this._sender.Send(registerUserCommand);
+            if (result.IsFailed)
+            {
+                result.Errors.ForEach(error =>
+                {
+                    ModelState.AddModelError(string.Empty, error.Message);
+                });
+                return Page();
+            }
+
+            this.RegisterSuccess = true;
             return Page();
         }
     }

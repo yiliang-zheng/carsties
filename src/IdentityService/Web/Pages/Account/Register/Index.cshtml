@@ -4,16 +4,73 @@
 }
 
 <div>
+    <div class="lead">
+        <h1>Register</h1>
+        <p>Create your own account</p>
+    </div>
     <partial name="Shared/_ValidationSummary"/>
-    
+
     <div class="row">
-        <div class="col-12 col-md-8 offset-md-2">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h2>Register</h2>
                 </div>
                 <div class="card-body">
-
+                    @if (Model.RegisterSuccess)
+                    {
+                        <div class="alert alert-success">
+                            <strong>Account created. </strong>
+                            <p>
+                                You can now
+                                <a asp-page="/Account/Login/Index" asp-route-returnUrl="@Model.Input.ReturnUrl" class="d-block pb-2">
+                                    click here
+                                </a>
+                                to login.
+                            </p>
+                        </div>
+                    }
+                    <form asp-page="/Account/Register/Index">
+                        <input type="hidden" asp-for="Input.ReturnUrl"/>
+                        <div class="form-group row">
+                            <label asp-for="Input.Email" class="col-md-2 col-form-label">Email</label>
+                            <div class="col-md-10">
+                                <input class="form-control" placeholder="Email address..." autocomplete="off" autofocus asp-for="Input.Email"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label" asp-for="Input.Username">Username</label>
+                            <div class="col-md-10">
+                                <input class="form-control" placeholder="Username..." autocomplete="off" asp-for="Input.Username" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label" asp-for="Input.FullName">Full Name</label>
+                            <div class="col-md-10">
+                                <input class="form-control" placeholder="Full name..." autocomplete="off" asp-for="Input.FullName" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label" asp-for="Input.Password">Password</label>
+                            <div class="col-md-10">
+                                <input type="password" class="form-control" placeholder="Password..." autocomplete="off" asp-for="Input.Password" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label" asp-for="Input.ConfirmedPassword">Confirm your password</label>
+                            <div class="col-md-10">
+                                <input type="password" class="form-control" placeholder="Type password again..." autocomplete="off" asp-for="Input.ConfirmedPassword" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-10">
+                                <a asp-page="/Account/Login/Index" asp-route-returnUrl="@Model.Input.ReturnUrl" class="d-block pb-2">
+                                    Already have account? Click here to login
+                                </a>
+                                <button type="submit" class="btn btn-primary" name="Input.Button" value="register">Create Account</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
