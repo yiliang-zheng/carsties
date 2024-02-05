@@ -25,6 +25,9 @@ public class UpdateAuctionCommandHandler : IRequestHandler<UpdateAuctionCommand,
         var auction = await this._repository.GetAsync(getByIdSpec, cancellationToken);
         if (auction == null) return Result.Fail<AuctionDto>(new Error("auction not found."));
 
+        if (!auction.Seller.Equals(request.Seller))
+            return Result.Fail<AuctionDto>("invalid request. Auction seller is not the same.");
+
         auction.UpdateAuction(
             request.Make,
             request.Model,

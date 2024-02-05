@@ -3,6 +3,8 @@ using Application;
 using FastEndpoints;
 using Infrastructure;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Filters;
 using WebApi.Consumer;
@@ -43,10 +45,25 @@ builder.Services.AddMassTransit(config =>
     });
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["IdentityService:Authority"];
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            NameClaimType = "username"
+        };
+    });
+builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseSerilogRequestLogging();
 app.UseFastEndpoints();
 

@@ -9,5 +9,6 @@ public record UpdateAuctionCommand(
     string Model,
     string Color,
     int? Mileage,
-    int? Year
+    int? Year,
+    string Seller
     ) : IRequest<Result<AuctionDto>>;

@@ -15,15 +15,21 @@ public class Create : Endpoint<CreateAuctionRequest, AuctionDto>
         _sender = sender;
         _mapper = mapper;
     }
+
+    public string CurrentUser => User.Identity switch
+    {
+        { Name.Length: > 0 } => User.Identity.Name,
+        { Name.Length: <= 0 } => string.Empty,
+        null => string.Empty
+    };
     public override void Configure()
     {
         Post(CreateAuctionRequest.Route);
-        AllowAnonymous();
     }
 
     public override async Task HandleAsync(CreateAuctionRequest req, CancellationToken ct)
     {
-        req.Seller = "james";
+        req.Seller = CurrentUser;
         var command = this._mapper.Map<CreateAuctionCommand>(req);
         var result = await this._sender.Send(command, ct);
 

@@ -16,14 +16,22 @@ public class Update: Endpoint<UpdateAuctionRequest, AuctionDto>
         _mapper = mapper;
         _sender = sender;
     }
+
+    public string CurrentUser => User.Identity switch
+    {
+        { Name.Length: > 0 } => User.Identity.Name,
+        { Name.Length: <= 0 } => string.Empty,
+        null => string.Empty
+    };
+
     public override void Configure()
     {
         Put(UpdateAuctionRequest.Route);
-        AllowAnonymous();
     }
 
     public override async Task HandleAsync(UpdateAuctionRequest req, CancellationToken ct)
     {
+        req.Seller = CurrentUser;
         var command = this._mapper.Map<UpdateAuctionCommand>(req);
         var result = await this._sender.Send(command, ct);
         if (result.IsFailed)

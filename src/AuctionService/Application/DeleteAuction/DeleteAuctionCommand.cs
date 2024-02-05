@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.DeleteAuction;
 
-public record DeleteAuctionCommand(Guid Id) : IRequest<Result>;
+public record DeleteAuctionCommand(Guid Id, string Seller) : IRequest<Result>;

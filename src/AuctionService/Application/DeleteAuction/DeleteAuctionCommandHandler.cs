@@ -20,6 +20,9 @@ public class DeleteAuctionCommandHandler : IRequestHandler<DeleteAuctionCommand,
         var auction = await this._repository.GetAsync(spec, cancellationToken);
         if (auction is null) return Result.Fail("auction not found");
 
+        if (!auction.Seller.Equals(request.Seller))
+            return Result.Fail("invalid request. Auction seller is not the same.");
+
         auction.MarkDeleted();
         await this._repository.DeleteAsync(auction, cancellationToken);
         return Result.Ok();

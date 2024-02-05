@@ -16,6 +16,14 @@ public class Delete:Endpoint<DeleteAuctionRequest, Result>
         _sender = sender;
         _mapper = mapper;
     }
+
+    public string CurrentUser => User.Identity switch
+    {
+        { Name.Length: > 0 } => User.Identity.Name,
+        { Name.Length: <= 0 } => string.Empty,
+        null => string.Empty
+    };
+
     public override void Configure()
     {
         Delete(DeleteAuctionRequest.Route);
@@ -23,6 +31,7 @@ public class Delete:Endpoint<DeleteAuctionRequest, Result>
 
     public override async Task HandleAsync(DeleteAuctionRequest req, CancellationToken ct)
     {
+        req.Seller = CurrentUser;
         var command = this._mapper.Map<DeleteAuctionCommand>(req);
         var result = await this._sender.Send(command, ct);
         if (result.IsFailed)

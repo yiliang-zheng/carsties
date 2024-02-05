@@ -17,4 +17,6 @@ public class UpdateAuctionRequest
     public int? Mileage { get; set; }
 
     public int? Year { get; set; }
+
+    public string Seller { get; set; }
 }
