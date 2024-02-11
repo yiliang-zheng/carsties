@@ -27,7 +27,7 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
 
     public Item Item { get; private set; }
 
-    public Auction(Guid id,int reservePrice, string seller, string winner, int? soldAmount, int? currentHighBid, DateTime auctionEnd)
+    public Auction(Guid id, int reservePrice, string seller, string winner, int? soldAmount, int? currentHighBid, DateTime auctionEnd)
     {
         Id = id;
         ReservePrice = Guard.Against.NegativeOrZero(reservePrice, nameof(reservePrice));
@@ -61,14 +61,15 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
             mileage,
             year
         );
-        this.RegisterDomainEvent(new AuctionUpdated{
-            Id =this.Id,
+        this.RegisterDomainEvent(new AuctionUpdated
+        {
+            Id = this.Id,
             Make = this.Item.Make,
             Model = this.Item.Model,
             Color = this.Item.Color,
             Mileage = this.Item.Mileage,
             Year = this.Item.Year
-            });
+        });
     }
 
     public void MarkDeleted()
@@ -83,4 +84,33 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
     {
         this.AuctionStatus = newStatus;
     }
+
+    public void FinishAuction(bool itemSold,int? amount, string winner)
+    {
+        if (itemSold)
+        {
+            switch (amount)
+            {
+                case { } x when x >= ReservePrice:
+                    this.Winner = winner;
+                    this.SoldAmount = amount;
+                    break;
+                case null:
+                    throw new ArgumentException("Invalid sold amount. Sold amount cannot be null", nameof(amount));
+                case {} x when x < ReservePrice:
+                    throw new ArgumentException("Invalid sold amount. Sold amount must meet reserve price or more.",
+                        nameof(amount));
+                    break;
+            }
+        }
+
+        AuctionStatus = this.SoldAmount switch
+        {
+            { } x when x >= this.ReservePrice => Status.Finished,
+            _ => Status.ReserveNotMet
+        };
+        
+    }
+
+    
 }

@@ -2,7 +2,7 @@
 
 public class ListAuctionRequest
 {
-    public const string Route = "/api/auction";
+    public const string Route = "/api/auctions";
 
     public DateTime? From { get; set; }
 }

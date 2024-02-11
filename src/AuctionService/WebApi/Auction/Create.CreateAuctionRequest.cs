@@ -2,7 +2,7 @@
 
 public class CreateAuctionRequest
 {
-    public const string Route = "/api/auction";
+    public const string Route = "/api/auctions";
 
     public string Make { get; set; }
 
