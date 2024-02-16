@@ -112,5 +112,38 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
         
     }
 
+    /// <summary>
+    /// update current highest bid
+    /// </summary>
+    /// <param name="bidStatus"></param>
+    /// <param name="bidAmount"></param>
+    public void PlaceBid(BidStatus bidStatus, int bidAmount)
+    {
+        //make sure auction is live
+        Guard.Against.InvalidInput(
+            AuctionStatus,
+            nameof(AuctionStatus),
+            p => p == Status.Live,
+            "Invalid request. Auction is not live."
+        );
+
+        //make sure bid amount > 0
+        Guard.Against.AgainstExpression<int>(p => p > 0, bidAmount, "Bid amount must be greater than 0");
+        
+        //make sure bid status is accepted
+        Guard.Against.InvalidInput(
+            bidStatus,
+            nameof(bidStatus),
+            p => p == BidStatus.Accepted,
+            "Bid status must be Accepted"
+        );
+
+        if (!CurrentHighBid.HasValue || CurrentHighBid.Value < bidAmount)
+        {
+            CurrentHighBid = bidAmount;
+            UpdatedAt = DateTime.UtcNow;
+        }
+    }
+
     
 }
