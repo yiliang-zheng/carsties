@@ -60,7 +60,7 @@ builder.Services.AddMassTransit(config =>
             host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
             host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
         });
-        
+
         cfg.ReceiveEndpoint("search-auction-created", configEndpoint =>
         {
             configEndpoint.UseMessageRetry(retryConfig =>
@@ -87,6 +87,11 @@ builder.Services.AddMassTransit(config =>
                 retryConfig.Interval(3, TimeSpan.FromSeconds(3));
             });
             configEndpoint.ConfigureConsumer<AuctionDeletedConsumer>(context);
+        });
+
+        cfg.ReceiveEndpoint("mark-search-auction-finish", configEndpoint =>
+        {
+            configEndpoint.ConfigureConsumer<MarkSearchFinishMessageConsumer>(context);
         });
 
         //global retry policy 

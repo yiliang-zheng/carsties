@@ -35,14 +35,13 @@ COPY ["src/StateMachine/SagaOrchestration/SagaOrchestration.csproj", "src/StateM
 RUN dotnet restore "Carsties.sln"
 
 #Copy the app folders
-COPY ["src/AuctionService/WebApi", "src/AuctionService/WebApi"]
-COPY ["src/AuctionService/Application", "src/AuctionService/Application"]
-COPY ["src/AuctionService/Infrastructure", "src/AuctionService/Infrastructure"]
-COPY ["src/AuctionService/Domain", "src/AuctionService/Domain"]
-COPY ["src/Common/Shared.Constants", "src/Common/Shared.Constants"]
+COPY ["src/IdentityService/Web", "src/IdentityService/Web"]
+COPY ["src/IdentityService/Application", "src/IdentityService/Application"]
+COPY ["src/IdentityService/Infrastructure", "src/IdentityService/Infrastructure"]
+COPY ["src/IdentityService/Domain", "src/IdentityService/Domain"]
 COPY ["src/Common/Shared.Domain", "src/Common/Shared.Domain"]
-WORKDIR "/src/src/AuctionService/WebApi"
-RUN dotnet build "./WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/src/IdentityService/Web"
+RUN dotnet build "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -51,4 +50,4 @@ RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish --no-build /p:UseAppH
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WebApi.dll"]
+ENTRYPOINT ["dotnet", "Web.dll"]

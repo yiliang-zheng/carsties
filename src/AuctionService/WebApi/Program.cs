@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Filters;
+using Shared.Domain.Messages;
 using WebApi.Consumer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +41,11 @@ builder.Services.AddMassTransit(config =>
             host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
             host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
         });
+
+        cfg.ReceiveEndpoint(
+            "mark-auction-finish",
+            configEndpoint => configEndpoint.ConfigureConsumer<FinishAuctionMessageConsumer>(context)
+        );
 
         cfg.ConfigureEndpoints(context);
     });

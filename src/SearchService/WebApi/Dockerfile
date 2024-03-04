@@ -35,13 +35,9 @@ COPY ["src/StateMachine/SagaOrchestration/SagaOrchestration.csproj", "src/StateM
 RUN dotnet restore "Carsties.sln"
 
 #Copy the app folders
-COPY ["src/AuctionService/WebApi", "src/AuctionService/WebApi"]
-COPY ["src/AuctionService/Application", "src/AuctionService/Application"]
-COPY ["src/AuctionService/Infrastructure", "src/AuctionService/Infrastructure"]
-COPY ["src/AuctionService/Domain", "src/AuctionService/Domain"]
-COPY ["src/Common/Shared.Constants", "src/Common/Shared.Constants"]
+COPY ["src/SearchService/WebApi", "src/SearchService/WebApi"]
 COPY ["src/Common/Shared.Domain", "src/Common/Shared.Domain"]
-WORKDIR "/src/src/AuctionService/WebApi"
+WORKDIR "/src/src/SearchService/WebApi"
 RUN dotnet build "./WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

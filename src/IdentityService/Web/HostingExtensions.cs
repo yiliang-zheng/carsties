@@ -1,4 +1,3 @@
-using System.Reflection;
 using Application;
 using Domain.ApplicationUser;
 using FluentValidation;
@@ -26,6 +25,10 @@ namespace Web
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
+                    if (builder.Environment.IsEnvironment("Docker"))
+                    {
+                        options.IssuerUri = "http://identity-svc:8080";
+                    }
 
                     // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
                     //options.EmitStaticAudienceClaim = true;

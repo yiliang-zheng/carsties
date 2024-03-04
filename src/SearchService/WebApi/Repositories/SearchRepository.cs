@@ -9,6 +9,7 @@ public class SearchRepository : ISearchRepository
 {
     public async Task<SearchResult> SearchItems(Query query, CancellationToken token)
     {
+        var count = await DB.CountAsync<Item>(cancellation:token);
         var result = DB.PagedSearch<Item, Item>();
 
         if (!string.IsNullOrEmpty(query.SearchTerm))
@@ -66,6 +67,16 @@ public class SearchRepository : ISearchRepository
             .Modify(p => p.Color, color)
             .Modify(p => p.Mileage, mileage)
             .Modify(p => p.Year, year)
+            .ExecuteAsync();
+    }
+
+    public async Task MarkFinished(Guid id, string status, string winner, int? soldAmount)
+    {
+        await DB.Update<Item>()
+            .MatchID(id)
+            .Modify(p => p.Status, status)
+            .Modify(p => p.Winner, winner)
+            .Modify(p => p.SoldAmount, soldAmount)
             .ExecuteAsync();
     }
 }

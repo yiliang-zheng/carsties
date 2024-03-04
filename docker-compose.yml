@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   postgres:
     image: postgres
@@ -24,6 +23,77 @@ services:
       - 15672:15672
     volumes:
       - rabbitmqdata:/var/lib/rabbitmq
+  auction-svc:
+    image: yiliangzheng0729/carsties-auction-svc:latest 
+    build: 
+      context: .
+      dockerfile: src/AuctionService/WebApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;User ID=postgres;Password=postgrespw;Database=auctions
+      - IdentityService__Authority=http://identity-svc:8080
+    ports:
+      - 7001:8080
+    depends_on:
+      - postgres
+      - rabbitmq
+  search-svc:
+    image: yiliangzheng0729/carsties-search-svc:latest  
+    build:
+      context: .
+      dockerfile: src/SearchService/WebApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - ConnectionStrings__MongoDbConnection=mongodb://root:mongopw@mongo
+      - AuctionServiceUrl=http://auction-svc:8080
+    ports:
+      - 7002:8080
+    depends_on:
+      - mongo
+      - rabbitmq
+  identity-svc:
+    image: yiliangzheng0729/carsties-identity-svc:latest 
+    build: 
+      context: .
+      dockerfile: src/IdentityService/Web/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:8080    
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;User ID=postgres;Password=postgrespw;Database=identity      
+    ports:
+      - 5000:8080
+    depends_on:
+      - postgres
+  gateway-svc:
+    image: yiliangzheng0729/carsties-gateway-svc:latest 
+    build: 
+      context: .
+      dockerfile: src/GatewayService/Web/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:8080      
+    ports:
+      - 6001:8080
+  state-machine-svc:
+    image: yiliangzheng0729/carsties-state-machine-svc:latest
+    build:
+      context: .
+      dockerfile: src/StateMachine/SagaOrchestration/Dockerfile
+    environment:    
+      - DOTNET_ENVIRONMENT=Development
+      - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;User ID=postgres;Password=postgrespw;Database=stateMachines
+    depends_on:
+      - rabbitmq
+      - postgres
 volumes:
   pgdata:
   mongodata:

@@ -2,6 +2,7 @@
 using Domain.Auction;
 using Domain.Auction.Specification;
 using FluentResults;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Domain.Interface;
@@ -24,6 +25,7 @@ public class FinishAuctionCommandHandler(IRepository<Auction> repository, IUnitO
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         var result = mapper.Map<AuctionDto>(auction);
+        
         return result;
     }
 }

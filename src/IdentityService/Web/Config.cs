@@ -33,6 +33,23 @@ namespace Web
                     {
                         "https://oauth.pstmn.io/v1/browser-callback"
                     }
+                },
+                new Client
+                {
+                    ClientId = "nextApp",
+                    ClientName = "NextJs Frontend App",
+                    ClientSecrets =
+                        {
+                            new Secret("secret".Sha256())
+                        },
+                    AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                    RequirePkce = false,
+                    RedirectUris =
+                    {
+                        "http://localhost:3000/api/auth/callback/id-server"
+                    },
+                    AllowOfflineAccess = true,
+                    AllowedScopes = {"openid", "profile", "auctionSvc"}
                 }
             };
     }

@@ -64,7 +64,7 @@ public class AuctionSvcHttpClient
         //    .ExecuteFirstAsync();
 
         var auctionUrl = _configuration["AuctionServiceUrl"];
-        var auctions = await _httpClient.GetFromJsonAsync<List<Item>>($"{auctionUrl}/api/auction?from={result?.CreatedOrUpdatedAt}");
+        var auctions = await _httpClient.GetFromJsonAsync<List<Item>>($"{auctionUrl}/api/auctions?from={result?.CreatedOrUpdatedAt}");
 
         return auctions;
     }

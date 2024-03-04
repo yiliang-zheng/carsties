@@ -1,12 +1,42 @@
+using System.Reflection;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using SagaOrchestration;
+using SagaOrchestration.DbContext;
+using SagaOrchestration.StateInstances;
+using SagaOrchestration.StateMachines;
+using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<Worker>();
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom
+    .Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
 
 builder.Services.AddMassTransit(config =>
 {
-    
+    config.AddSagaStateMachine<FinishAuctionStateMachine, FinishAuctionStateInstance>()
+        .EntityFrameworkRepository(repoConfigurator =>
+        {
+            repoConfigurator.ConcurrencyMode = ConcurrencyMode.Optimistic;
+            repoConfigurator.AddDbContext<DbContext, StateMachineDbContext>((provider, dbContextBuilder) =>
+            {
+                dbContextBuilder.UseNpgsql(
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    m =>
+                    {
+                        m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                        m.MigrationsHistoryTable($"__{nameof(StateMachineDbContext)}");
+                    });
+            });
+            repoConfigurator.UsePostgres();
+        });
+    config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("saga", false));
+
     config.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
@@ -15,9 +45,22 @@ builder.Services.AddMassTransit(config =>
             host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
         });
 
-        cfg.ReceiveEndpoint("finish-auction-message-queue", configEndpoint=>configEndpoint.ConfigureSaga<>(context));
+        cfg.ReceiveEndpoint("saga-mark-auction-finish-message", configEndpoint =>
+        {
+            configEndpoint.ConfigureSaga<FinishAuctionStateInstance>(context);
+        });
+        cfg.ConfigureEndpoints(context);
     });
 });
 
-var host = builder.Build();
+builder.Services.AddDbContext<StateMachineDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddHostedService<Worker>();
+
+var host = builder
+    .Build();
+
 host.Run();

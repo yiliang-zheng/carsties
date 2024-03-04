@@ -1,10 +1,10 @@
 ﻿using Domain.Auction;
 using MassTransit;
-using Shared.Constants.Extensions;
-using Shared.Domain.Events;
-using Shared.Domain;
-using Shared.Domain.Interface;
 using Microsoft.EntityFrameworkCore;
+using Shared.Constants.Extensions;
+using Shared.Domain;
+using Shared.Domain.Events;
+using Shared.Domain.Interface;
 
 namespace Infrastructure.Data.Repository;
 

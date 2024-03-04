@@ -16,4 +16,6 @@ public class FinishAuctionStateInstance:SagaStateMachineInstance
 
     public Guid AuctionId { get; set; }
 
+    public uint RowVersion { get; set; }
+
 }
