@@ -1,0 +1,27 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import TRPCReactProvider from "./_trpc/Provider";
+
+import Navbar from "@/app/_components/Navbar/Navbar";
+
+export const metadata: Metadata = {
+  title: "Carsties Auction",
+  description: "Carsties auction platform. Get your car sold faster.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        <TRPCReactProvider>
+          <Navbar title={metadata.title?.toString() || ""} />
+          <main className="container mx-auto px-5 pt-10">{children}</main>
+        </TRPCReactProvider>
+      </body>
+    </html>
+  );
+}
