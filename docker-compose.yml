@@ -64,6 +64,7 @@ services:
     build: 
       context: .
       dockerfile: src/IdentityService/Web/Dockerfile
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8080    

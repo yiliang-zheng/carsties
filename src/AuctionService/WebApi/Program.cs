@@ -1,9 +1,11 @@
+using System.IO.Compression;
 using System.Reflection;
 using Application;
 using FastEndpoints;
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Filters;
@@ -64,6 +66,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
+builder.Services.AddResponseCompression(options =>
+{
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.SmallestSize;
+});
 
 var app = builder.Build();
 
@@ -71,6 +88,7 @@ var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSerilogRequestLogging();
+app.UseResponseCompression();
 app.UseFastEndpoints();
 
 //seed data

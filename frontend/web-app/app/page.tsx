@@ -1,11 +1,11 @@
 import { serverClient } from "@/app/_trpc/serverClient";
+import AuctionList from "@/app/_components/AuctionList/AuctionList";
 
-import TodoList from "@/app/_components/TodoList/TodoList";
 export default async function Home() {
-  const result = await serverClient.getTodos();
+  const result = await serverClient.auctions.list();
   return (
     <div className="w-full items-center justify-between font-mono text-sm lg:flex">
-      <TodoList initialTodos={result} />
+      <AuctionList initialAuctions={result} />
     </div>
   );
 }
