@@ -1,10 +1,15 @@
 import { z } from "zod";
+import { createPagedResultSchema } from "@/server/schemas/pagedResult";
 
 const auctionStatus = z.enum(["Live", "Finished", "Reserve Not Met"]);
 
 export const auctionSchema = z.object({
-  id: z.string().uuid(),
-  createdAt: z.string().datetime(),
+  id: z.string(),
+  createdAt: z
+    .string()
+    .datetime()
+    .nullish()
+    .catch((_) => undefined),
   updatedAt: z.string().datetime().nullish(),
   auctionEnd: z.string().datetime(),
   seller: z.string(),
@@ -23,4 +28,8 @@ export const auctionSchema = z.object({
 
 export const arrayAuctionSchema = z.array(auctionSchema);
 
+export const pagedAuctionSchema = createPagedResultSchema(auctionSchema);
+
 export type Auction = z.infer<typeof auctionSchema>;
+
+export type PagedAuction = z.infer<typeof pagedAuctionSchema>;

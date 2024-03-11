@@ -1,15 +1,38 @@
-import { arrayAuctionSchema } from "@/server/schemas/auction";
-import type { Auction } from "@/server/schemas/auction";
+import { pagedAuctionSchema } from "@/server/schemas/auction";
 
-export const list = async (): Promise<Auction[]> => {
-  const response = await fetch("http://localhost:6001/auctions/", {
+import type { PagedAuction } from "@/server/schemas/auction";
+
+export const list = async (
+  searchTerm: string | null | undefined,
+  pageSize: number = 4,
+  pageNumber: number = 1,
+  seller: string | null | undefined,
+  winner: string | null | undefined,
+  orderBy: string | null | undefined,
+  filterBy: string | null | undefined
+): Promise<PagedAuction> => {
+  const query = JSON.stringify({
+    searchTerm,
+    pageSize,
+    pageNumber,
+    seller,
+    winner,
+    orderBy,
+    filterBy,
+  });
+  const response = await fetch(`http://localhost:6001/search?query=${query}`, {
     method: "GET",
   });
   if (!response.ok) throw new Error(response.statusText);
 
   const data = await response.json();
-  const parsed = await arrayAuctionSchema.safeParseAsync(data);
-  if (!parsed.success) throw new Error("parse auction type failed");
+
+  const parsed = await pagedAuctionSchema.safeParseAsync(data);
+
+  if (!parsed.success) {
+    console.log(parsed.error);
+    throw new Error("parse auction type failed");
+  }
 
   return parsed.data;
 };

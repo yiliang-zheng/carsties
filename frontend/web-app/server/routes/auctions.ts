@@ -11,5 +11,28 @@ export const auctionsRoute = router({
       })
     )
     .query(async ({ input }) => await get(input.id)),
-  list: publicProcedure.query(async () => await list()),
+  list: publicProcedure
+    .input(
+      z.object({
+        searchTerm: z.string().nullish(),
+        pageSize: z.number().nullish(),
+        pageNumber: z.number().nullish(),
+        seller: z.string().nullish(),
+        winner: z.string().nullish(),
+        orderBy: z.string().nullish(),
+        filterBy: z.string().nullish(),
+      })
+    )
+    .query(
+      async ({ input }) =>
+        await list(
+          input.searchTerm,
+          input.pageSize ?? undefined,
+          input.pageNumber ?? undefined,
+          input.seller,
+          input.winner,
+          input.orderBy,
+          input.filterBy
+        )
+    ),
 });

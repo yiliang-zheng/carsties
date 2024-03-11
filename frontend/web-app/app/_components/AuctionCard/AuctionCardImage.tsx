@@ -17,8 +17,9 @@ const AuctionCardImage = ({ imageUrl, title }: Props) => {
       alt={title}
       width={0}
       height={0}
-      priority
       sizes="100vw"
+      style={{ width: "100%", height: "auto" }}
+      priority
       className={`object-cover h-auto w-auto group-hover:opacity-75 duration-700 ease-in-out ${imageLoadingClass}`}
       onLoad={(_) => setLoading(false)}
     />
