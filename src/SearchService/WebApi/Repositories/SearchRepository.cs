@@ -22,7 +22,6 @@ public class SearchRepository : ISearchRepository
         result = query.OrderBy switch
         {
             "make" => result
-                .Sort(p => p.Ascending(i => i.Make))
                 .Sort(p => p.Ascending(i => i.Make)),
             "new" => result.Sort(p => p.Descending(i => i.CreatedAt)),
             _ => result.Sort(p => p.Descending(i => i.AuctionEnd))

@@ -1,14 +1,17 @@
 import React, { useState } from "react";
+
+import { pageSizes } from "@/app/_hooks/useParamsStore";
 import { cn } from "@/utils/cn";
 import DownArrowIcon from "@/app/_components/Icons/DownArrow";
 import UpArrowIcon from "@/app/_components/Icons/UpArrow";
+
+import type { PageSizeOption } from "@/app/_hooks/useParamsStore";
 type Props = {
-  pageSize: number;
-  onPageSizeChange: (size: number) => void;
+  pageSize: PageSizeOption;
+  onPageSizeChange: (size: PageSizeOption) => void;
 };
 
 const PageSize = ({ pageSize, onPageSizeChange }: Props) => {
-  const availableSizes: number[] = [4, 8, 12] as const;
   const [open, setOpen] = useState(false);
 
   return (
@@ -35,7 +38,7 @@ const PageSize = ({ pageSize, onPageSizeChange }: Props) => {
             { hidden: !open }
           )}
         >
-          {availableSizes.map((size, idx) => (
+          {pageSizes.map((size, idx) => (
             <div
               key={idx}
               className={cn(

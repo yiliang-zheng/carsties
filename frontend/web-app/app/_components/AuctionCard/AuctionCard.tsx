@@ -19,7 +19,7 @@ const AuctionCard = ({ auction }: Props) => {
         <h2 className="card-title">
           {auction.make} {auction.model}
         </h2>
-        <div className="card-actions justify-around stats">
+        <div className="card-actions justify-around stats no-scrollbar">
           <div className="stat px-2.5 py-0">
             <div className="stat-title">Year</div>
             <div className="stat-value text-primary text-sm">

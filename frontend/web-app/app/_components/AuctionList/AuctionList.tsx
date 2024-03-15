@@ -8,6 +8,7 @@ import AuctionCard from "@/app/_components/AuctionCard/AuctionCard";
 import Pagination from "@/app/_components/Pagination/Pagniation";
 import PageSize from "@/app/_components/PageSize/PageSize";
 import Filter from "@/app/_components/Filters/Filter";
+import EmptyList from "@/app/_components/EmptyList/EmptyList";
 
 import type { PagedAuction, Auction } from "@/server/schemas/auction";
 
@@ -21,6 +22,8 @@ const AuctionList = ({ initialAuctions }: Props) => {
       pageNumber: state.pageNumber,
       pageSize: state.pageSize,
       searchTerm: state.searchTerm,
+      filterBy: state.filterBy,
+      orderBy: state.orderBy,
     }))
   );
   const setParams = useParamsStore((state) => state.setParams);
@@ -30,11 +33,14 @@ const AuctionList = ({ initialAuctions }: Props) => {
       pageNumber: params.pageNumber,
       pageSize: params.pageSize,
       searchTerm: params.searchTerm,
+      filterBy: params.filterBy,
+      orderBy: params.orderBy,
     },
     {
       initialData: initialAuctions,
       refetchOnMount: false,
       refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -51,31 +57,35 @@ const AuctionList = ({ initialAuctions }: Props) => {
   }, [data]);
 
   return (
-    <div className="flex flex-col lg:flex-row">
+    <div className="w-full flex flex-col lg:flex-row">
       <Filter />
-      <div>
-        <div className="grid grid-cols-1 gap-6 auto-rows-max  lg:grid-cols-3">
-          {auctions.map((auction, idx) => (
-            <div key={idx} className="w-full">
-              <AuctionCard auction={auction} />
-            </div>
-          ))}
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && !isError && !data.totalCount && <EmptyList showReset />}
+      {!isLoading && !isError && data.totalCount > 0 && (
+        <div>
+          <div className="grid grid-cols-1 gap-6 auto-rows-max  lg:grid-cols-3">
+            {auctions.map((auction, idx) => (
+              <div key={idx} className="w-full">
+                <AuctionCard auction={auction} />
+              </div>
+            ))}
+          </div>
+          <div className="w-full flex justify-between my-2">
+            <div></div>
+            <Pagination
+              currentPage={params.pageNumber}
+              onPageChange={(pageNumber) => setParams({ pageNumber })}
+              totalPages={totalPages}
+            />
+            <PageSize
+              pageSize={params.pageSize}
+              onPageSizeChange={(newPageSize) =>
+                setParams({ pageSize: newPageSize })
+              }
+            />
+          </div>
         </div>
-        <div className="w-full flex justify-between my-2">
-          <div></div>
-          <Pagination
-            currentPage={params.pageNumber}
-            onPageChange={(pageNumber) => setParams({ pageNumber })}
-            totalPages={totalPages}
-          />
-          <PageSize
-            pageSize={params.pageSize}
-            onPageSizeChange={(newPageSize) =>
-              setParams({ pageSize: newPageSize })
-            }
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 };

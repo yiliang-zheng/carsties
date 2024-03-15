@@ -1,10 +1,23 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useParamsStore } from "@/app/_hooks/useParamsStore";
 
 const SearchInput = () => {
   const searchRef = useRef<HTMLInputElement>(null);
   const setParams = useParamsStore((state) => state.setParams);
+
+  useEffect(() => {
+    const unsubsribe = useParamsStore.subscribe(
+      (state) => state.searchTerm,
+      (current, previous) => {
+        if (current !== previous && !!searchRef.current) {
+          searchRef.current.value = current;
+        }
+      }
+    );
+
+    return unsubsribe;
+  }, []);
 
   return (
     <div className="w-full flex items-center border-2 border-gray-300 rounded-full py-2 shadow-sm">
