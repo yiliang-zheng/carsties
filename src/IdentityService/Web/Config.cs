@@ -49,7 +49,8 @@ namespace Web
                         "http://localhost:3000/api/auth/callback/id-server"
                     },
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "auctionSvc"}
+                    AllowedScopes = {"openid", "profile", "auctionSvc"},
+                    AlwaysIncludeUserClaimsInIdToken = true
                 }
             };
     }

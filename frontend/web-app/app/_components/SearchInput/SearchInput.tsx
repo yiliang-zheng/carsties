@@ -2,7 +2,11 @@
 import React, { useRef, useEffect } from "react";
 import { useParamsStore } from "@/app/_hooks/useParamsStore";
 
-const SearchInput = () => {
+const SearchInput = ({
+  placeholder = "Search cars by make, model and color...",
+}: {
+  placeholder?: string;
+}) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const setParams = useParamsStore((state) => state.setParams);
 
@@ -36,7 +40,7 @@ const SearchInput = () => {
         focus:outline-none
         focus:border-transparent
         focus:ring-0"
-        placeholder="Search cars by make, model and color..."
+        placeholder={placeholder}
       />
 
       <button

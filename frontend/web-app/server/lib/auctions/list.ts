@@ -4,7 +4,7 @@ import type { PagedAuction } from "@/server/schemas/auction";
 
 export const list = async (
   searchTerm: string | null | undefined,
-  pageSize: number = 4,
+  pageSize: number = 6,
   pageNumber: number = 1,
   seller: string | null | undefined,
   winner: string | null | undefined,

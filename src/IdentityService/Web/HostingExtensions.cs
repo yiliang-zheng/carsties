@@ -21,7 +21,6 @@ namespace Web
             builder.Services
                 .AddIdentityServer(options =>
                 {
-                    options.KeyManagement.Enabled = false;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;

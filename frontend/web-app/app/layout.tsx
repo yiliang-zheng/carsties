@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import TRPCReactProvider from "./_trpc/Provider";
+import TRPCReactProvider from "@/app/_trpc/Provider";
+import SessionProvider from "@/app/_providers/SessionProvider";
 
 import Navbar from "@/app/_components/Navbar/Navbar";
 
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body>
         <TRPCReactProvider>
           <Navbar title={metadata.title?.toString() || ""} />
-          <main className="container mx-auto px-5 pt-10">{children}</main>
+          <SessionProvider>
+            <main className="container mx-auto px-5 pt-10">{children}</main>
+          </SessionProvider>
         </TRPCReactProvider>
       </body>
     </html>
