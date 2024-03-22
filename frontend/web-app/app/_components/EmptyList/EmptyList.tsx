@@ -1,17 +1,27 @@
+"use client";
+
 import { useParamsStore } from "@/app/_hooks/useParamsStore";
+import Button from "@/app/_components/Core/Button";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 type Props = {
   title?: string;
   subtitle?: string;
   showReset: boolean;
+  showLogin: boolean;
+  callbackUrl?: string;
 };
 
 const EmptyList = ({
   title = "No matches for this filter.",
   subtitle = "Try changing or resetting the filter",
   showReset,
+  showLogin = false,
 }: Props) => {
   const reset = useParamsStore((state) => state.resetParams);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   return (
     <div className="w-full h-[40vh] flex flex-col gap-2 justify-center items-center shadow-lg bg-white border rounded-md">
@@ -29,6 +39,15 @@ const EmptyList = ({
         >
           Reset Filter
         </button>
+      )}
+      {showLogin && !!callbackUrl && (
+        <Button
+          color="dark"
+          outline
+          onClick={() => signIn("id-server", { callbackUrl })}
+        >
+          Login
+        </Button>
       )}
     </div>
   );

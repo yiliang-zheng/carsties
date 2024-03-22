@@ -2,6 +2,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { getSession } from "@/server/lib/auth/getSession";
 import { getCurrentUser } from "@/server/lib/auth/getCurrentUser";
+import { getToken } from "next-auth/jwt";
 
 import type { Session } from "next-auth";
 import type { NextRequest } from "next/server";
@@ -12,19 +13,27 @@ type CreateContextOptions = {
     name: string | null;
     email: string | null;
   } | null;
+  accessToken: string | null | undefined;
 };
 
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     user: opts.user,
+    accessToken: opts.accessToken,
   };
 };
 
 export const createTRPCContext = async (opts: { req: NextRequest }) => {
   const session = await getSession();
   const user = await getCurrentUser();
-  return createInnerTRPCContext({ session, user });
+  const token = await getToken({ req: opts.req });
+
+  return createInnerTRPCContext({
+    session,
+    user,
+    accessToken: token?.accessToken,
+  });
 };
 
 const t = initTRPC

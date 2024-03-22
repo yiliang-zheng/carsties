@@ -19,8 +19,8 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <TRPCReactProvider>
-          <Navbar title={metadata.title?.toString() || ""} />
           <SessionProvider>
+            <Navbar />
             <main className="container mx-auto px-5 pt-10">{children}</main>
           </SessionProvider>
         </TRPCReactProvider>

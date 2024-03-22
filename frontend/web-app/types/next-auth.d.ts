@@ -19,5 +19,6 @@ declare module "next-auth/jwt" {
       username: string;
     } & DefaultJWT;
     username: string;
+    accessToken: string;
   }
 }

@@ -17,9 +17,10 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt: async ({ token, profile }) => {
+    jwt: async ({ token, profile, account }) => {
       if (!!profile) token.username = profile.username;
-
+      if (!!account && !!account.access_token)
+        token.accessToken = account.access_token;
       return token;
     },
     session: async ({ session, token }) => {
@@ -27,6 +28,9 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
+  },
+  pages: {
+    signIn: "/signIn",
   },
 };
 

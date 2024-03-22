@@ -1,6 +1,7 @@
 "use client";
 import React, { use, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import superjson from "superjson";
 import { httpBatchLink } from "@trpc/client";
 
 import { trpc } from "@/app/_trpc/client";
@@ -14,6 +15,7 @@ export default function TRPCReactProvider({
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [httpBatchLink({ url: "http://localhost:3000/api/trpc" })],
+      transformer: superjson,
     })
   );
 
