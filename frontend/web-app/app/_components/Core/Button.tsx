@@ -1,5 +1,5 @@
 import { cn } from "@/utils/cn";
-import type { ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 const colors = {
   dark: {
@@ -41,6 +41,7 @@ type Props = {
   className?: string;
   outline?: boolean;
   color?: keyof typeof colors;
+  type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
   onClick?: () => void;
 };
 
@@ -49,6 +50,7 @@ const Button = ({
   className,
   outline = false,
   color = "dark",
+  type = "button",
   onClick,
 }: Props) => {
   const commonClass =
@@ -58,12 +60,9 @@ const Button = ({
 
   return (
     <button
-      type="button"
+      type={type}
       className={cn(commonClass, colorClass, className)}
-      onClick={(e) => {
-        e.preventDefault();
-        if (!!onClick) onClick();
-      }}
+      onClick={onClick}
     >
       {children}
     </button>
