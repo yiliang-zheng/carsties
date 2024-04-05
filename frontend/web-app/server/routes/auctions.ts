@@ -1,7 +1,11 @@
-import { router, publicProcedure } from "@/server/trpc";
+import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
 import { z } from "zod";
 import { get } from "@/server/lib/auctions/get";
 import { list } from "@/server/lib/auctions/list";
+import { create } from "@/server/lib/auctions/create";
+import { update } from "@/server/lib/auctions/update";
+import { createAuctionPayloadSchema } from "@/server/schemas/createAuction";
+import { updateAuctionPayloadSchema } from "@/server/schemas/updateAuction";
 
 export const auctionsRoute = router({
   get: publicProcedure
@@ -23,16 +27,25 @@ export const auctionsRoute = router({
         filterBy: z.string().nullish(),
       })
     )
-    .query(
-      async ({ input }) =>
-        await list(
-          input.searchTerm,
-          input.pageSize ?? undefined,
-          input.pageNumber ?? undefined,
-          input.seller,
-          input.winner,
-          input.orderBy,
-          input.filterBy
-        )
+    .query(async ({ input }) => {
+      return await list(
+        input.searchTerm,
+        input.pageSize ?? undefined,
+        input.pageNumber ?? undefined,
+        input.seller,
+        input.winner,
+        input.orderBy,
+        input.filterBy
+      );
+    }),
+  create: protectedProcedure
+    .input(createAuctionPayloadSchema)
+    .mutation(
+      async ({ input, ctx }) => await create(input, ctx.accessToken ?? "")
+    ),
+  update: protectedProcedure
+    .input(updateAuctionPayloadSchema)
+    .mutation(
+      async ({ input, ctx }) => await update(input, ctx.accessToken ?? "")
     ),
 });

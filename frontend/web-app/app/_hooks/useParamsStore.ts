@@ -41,8 +41,8 @@ type State = {
   pageNumber: number;
   pageSize: PageSizeOption;
   searchTerm: string;
-  seller: string;
-  winner: string;
+  seller?: string;
+  winner?: string;
   orderBy: SortByOption;
   filterBy: FilterByOption;
 };
@@ -57,8 +57,8 @@ const initState: State = {
   pageNumber: 1,
   pageSize: 6,
   searchTerm: "",
-  seller: "",
-  winner: "",
+  seller: undefined,
+  winner: undefined,
   orderBy: "auctionEnd",
   filterBy: "live",
 };

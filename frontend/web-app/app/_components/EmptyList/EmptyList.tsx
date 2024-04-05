@@ -9,7 +9,7 @@ type Props = {
   title?: string;
   subtitle?: string;
   showReset: boolean;
-  showLogin: boolean;
+  showLogin?: boolean;
   callbackUrl?: string;
 };
 

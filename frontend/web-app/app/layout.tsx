@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TRPCReactProvider from "@/app/_trpc/Provider";
 import SessionProvider from "@/app/_providers/SessionProvider";
+import ToasterProvider from "@/app/_providers/ToasterProvider";
 
 import Navbar from "@/app/_components/Navbar/Navbar";
 
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body>
         <TRPCReactProvider>
           <SessionProvider>
+            <ToasterProvider />
             <Navbar />
             <main className="container mx-auto px-5 pt-10">{children}</main>
           </SessionProvider>

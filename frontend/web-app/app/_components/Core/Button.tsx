@@ -1,4 +1,5 @@
 import { cn } from "@/utils/cn";
+import LoadingIcon from "@/app/_components/Icons/Loading";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 const colors = {
@@ -42,6 +43,7 @@ type Props = {
   outline?: boolean;
   color?: keyof typeof colors;
   type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
+  isLoading?: boolean;
   onClick?: () => void;
 };
 
@@ -51,6 +53,7 @@ const Button = ({
   outline = false,
   color = "dark",
   type = "button",
+  isLoading = false,
   onClick,
 }: Props) => {
   const commonClass =
@@ -63,8 +66,15 @@ const Button = ({
       type={type}
       className={cn(commonClass, colorClass, className)}
       onClick={onClick}
+      disabled={isLoading}
     >
-      {children}
+      {isLoading && (
+        <span className="flex flex-row items-center">
+          <LoadingIcon outline={outline} className="inline w-4 h-4 me-3" />{" "}
+          Loading...
+        </span>
+      )}
+      {!isLoading && children}
     </button>
   );
 };

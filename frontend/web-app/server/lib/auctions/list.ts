@@ -1,6 +1,8 @@
+import { fetchWrapper, getErrorMessage } from "@/server/lib/fetchWrapper";
 import { pagedAuctionSchema } from "@/server/schemas/auction";
 
 import type { PagedAuction } from "@/server/schemas/auction";
+import { TRPCError } from "@trpc/server";
 
 export const list = async (
   searchTerm: string | null | undefined,
@@ -20,18 +22,26 @@ export const list = async (
     orderBy,
     filterBy,
   });
-  const response = await fetch(`http://localhost:6001/search?query=${query}`, {
-    method: "GET",
-  });
-  if (!response.ok) throw new Error(response.statusText);
 
-  const data = await response.json();
+  let data: PagedAuction;
+  try {
+    data = await fetchWrapper.get(`search?query=${query}`);
+  } catch (error) {
+    console.log(error);
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: getErrorMessage(error),
+    });
+  }
 
   const parsed = await pagedAuctionSchema.safeParseAsync(data);
 
   if (!parsed.success) {
     console.log(parsed.error);
-    throw new Error("parse auction type failed");
+    throw new TRPCError({
+      code: "PARSE_ERROR",
+      message: "parse auction type failed",
+    });
   }
 
   return parsed.data;

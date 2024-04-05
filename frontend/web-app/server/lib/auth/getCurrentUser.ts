@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export type User = {
   name: string;
   email: string;
+  username: string;
 };
 export const getCurrentUser = async (): Promise<User | null> => {
   try {
@@ -13,6 +14,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
     const result: User = {
       name: session.user.name ?? "",
       email: session.user.email ?? "",
+      username: session.user.username,
     };
 
     return result;

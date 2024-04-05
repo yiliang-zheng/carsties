@@ -24,6 +24,8 @@ const AuctionList = ({ initialAuctions }: Props) => {
       searchTerm: state.searchTerm,
       filterBy: state.filterBy,
       orderBy: state.orderBy,
+      seller: state.seller,
+      winner: state.winner,
     }))
   );
   const setParams = useParamsStore((state) => state.setParams);
@@ -35,6 +37,8 @@ const AuctionList = ({ initialAuctions }: Props) => {
       searchTerm: params.searchTerm,
       filterBy: params.filterBy,
       orderBy: params.orderBy,
+      seller: params.seller,
+      winner: params.winner,
     },
     {
       initialData: initialAuctions,

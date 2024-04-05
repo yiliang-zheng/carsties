@@ -28,7 +28,8 @@ namespace Web
                     RequirePkce = true,
                     //ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
                     RequireClientSecret = false,
-                    AllowedScopes = { "openid", "profile", "auctionSvc" },
+                    AllowOfflineAccess = true,
+                    AllowedScopes = { "openid", "profile", "auctionSvc", "offline_access" },
                     RedirectUris = new List<string>
                     {
                         "https://oauth.pstmn.io/v1/browser-callback"
@@ -49,8 +50,8 @@ namespace Web
                         "http://localhost:3000/api/auth/callback/id-server"
                     },
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "auctionSvc"},
-                    AlwaysIncludeUserClaimsInIdToken = true
+                    AllowedScopes = {"openid", "profile", "auctionSvc", "offline_access"},
+                    AlwaysIncludeUserClaimsInIdToken = true,
                 }
             };
     }

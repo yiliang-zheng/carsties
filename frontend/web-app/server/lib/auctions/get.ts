@@ -1,15 +1,27 @@
+import { fetchWrapper, getErrorMessage } from "@/server/lib/fetchWrapper";
 import { auctionSchema } from "@/server/schemas/auction";
+import { TRPCError } from "@trpc/server";
+
 import type { Auction } from "@/server/schemas/auction";
 
 export const get = async (id: string): Promise<Auction> => {
-  const response = await fetch(`http://localhost:6001/auctions/${id}`, {
-    method: "GET",
-  });
-  if (!response.ok) throw new Error(response.statusText);
+  let data: Auction;
+  try {
+    data = await fetchWrapper.get<Auction>(`auctions/${id}`);
+  } catch (error) {
+    console.log(error);
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: getErrorMessage(error),
+    });
+  }
 
-  const data = await response.json();
   const parsed = await auctionSchema.safeParseAsync(data);
-  if (!parsed.success) throw new Error("parse auction type failed");
+  if (!parsed.success)
+    throw new TRPCError({
+      code: "PARSE_ERROR",
+      message: "parse auction type failed",
+    });
 
   return parsed.data;
 };
