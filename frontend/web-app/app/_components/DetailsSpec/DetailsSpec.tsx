@@ -41,7 +41,9 @@ const DetailedSpecs = ({ auction }: Props) => {
           <Table.Cell>{auction.mileage}</Table.Cell>
         </Table.Row>
         <Table.Row>
-          <Table.Cell>Has reserve price?</Table.Cell>
+          <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+            Has reserve price?
+          </Table.Cell>
           <Table.Cell>{auction.reservePrice > 0 ? "Yes" : "No"}</Table.Cell>
         </Table.Row>
       </Table.Body>

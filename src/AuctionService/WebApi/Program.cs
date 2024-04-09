@@ -1,5 +1,3 @@
-using System.IO.Compression;
-using System.Reflection;
 using Application;
 using FastEndpoints;
 using Infrastructure;
@@ -8,8 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Filters;
-using Shared.Domain.Messages;
+using System.IO.Compression;
+using System.Reflection;
 using WebApi.Consumer;
 
 var builder = WebApplication.CreateBuilder(args);

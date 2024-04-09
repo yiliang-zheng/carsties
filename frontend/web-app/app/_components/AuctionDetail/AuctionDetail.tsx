@@ -1,10 +1,12 @@
 "use client";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 import { trpc } from "@/app/_trpc/client";
-
 import Heading from "@/app/_components/Core/Heading";
 import CountdownTimer from "@/app/_components/CountdownTimer/CountdownTimer";
 import AuctionCardImage from "@/app/_components/AuctionCard/AuctionCardImage";
 import DetailedSpecs from "@/app/_components/DetailsSpec/DetailsSpec";
+import EditButton from "@/app/_components/EditButton/EditButton";
 
 import type { Auction } from "@/server/schemas/auction";
 
@@ -26,7 +28,11 @@ const AuctionDetail = ({ auction, id }: Props) => {
   return (
     <div>
       <div className="flex justify-between">
-        <Heading title={`${data.make} ${data.model}`} />
+        <div className="flex justify-center items-center gap-3">
+          <Heading title={`${data.make} ${data.model}`} />
+          <EditButton id={id} seller={data.seller} />
+        </div>
+
         <div className="flex gap-3">
           <h3 className="text-2xl font-semibold">Time remaining: </h3>
           <CountdownTimer auctionEnd={data.auctionEnd} />

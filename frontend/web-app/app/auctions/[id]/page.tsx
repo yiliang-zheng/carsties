@@ -7,10 +7,15 @@ type Props = {
 };
 
 export default async function Details({ params }: Props) {
+  //const data = await serverClient.auctions.get({ id: params.id });
   const serverClient = await createServerClient();
-  const data = await serverClient.auctions.get({ id: params.id });
-  //const data = await serverClient.auctions.list({});
+  const data = await serverClient.auctions.list({});
   console.log(data);
 
-  return <AuctionDetail auction={data} id={params.id} />;
+  return (
+    <AuctionDetail
+      auction={{} as Auction}
+      id="9559be6f-b481-4126-9dda-85375758fdcd"
+    />
+  );
 }
