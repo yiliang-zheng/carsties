@@ -9,6 +9,7 @@ using Serilog;
 using System.IO.Compression;
 using System.Reflection;
 using WebApi.Consumer;
+using WebApi.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +81,8 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options =>
     options.Level = CompressionLevel.SmallestSize;
 });
 
+builder.Services.AddGrpc();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -88,6 +91,7 @@ app.UseAuthorization();
 app.UseSerilogRequestLogging();
 app.UseResponseCompression();
 app.UseFastEndpoints();
+app.MapGrpcService<GrpcAuctionService>();
 
 //seed data
 if (!app.Environment.IsProduction())

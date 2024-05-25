@@ -15,6 +15,9 @@ message AuctionModel{
 	string seller = 2;
 	string auctionEnd = 3;
 	int32 reservePrice = 4;
+	bool finished = 5;
+	bool itemSold = 6;
+	string winner = 7;
 }
 
 message GetAuctionResponse {

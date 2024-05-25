@@ -2,6 +2,7 @@ using Infrastructure;
 using Serilog;
 using System.Reflection;
 using Application;
+using Infrastructure.Grpc;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -64,6 +65,7 @@ namespace WebApi
                     };
                 });
 
+            //application & infrastructure
             builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddAuthorization();

@@ -10,14 +10,18 @@ using Shared.Domain.Interface;
 
 namespace Application.PlaceBid;
 
-public class PlaceBidCommandHandler(IBidRepository bidRepository, IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<PlaceBidCommand, Result<BidDto>>
+public class PlaceBidCommandHandler(IBidRepository bidRepository, IUnitOfWork unitOfWork, IMapper mapper, IGrpcAuctionClient grpcClient) : IRequestHandler<PlaceBidCommand, Result<BidDto>>
 {
     public async Task<Result<BidDto>> Handle(PlaceBidCommand request, CancellationToken cancellationToken)
     {
         var auctionByIdSpec = new AuctionByAuctionIdSpec(request.AuctionId);
         var auction = await bidRepository.GetAuctionById(auctionByIdSpec);
         //auction not found
-        if (auction is null) return Result.Fail<BidDto>(BidErrors.AuctionNotFound);
+        if (auction is null)
+        {
+            auction = grpcClient.GetAuction(request.AuctionId);
+            if (auction is null) return Result.Fail<BidDto>(BidErrors.AuctionNotFound);
+        }
 
         //same bidder and seller
         if (auction.Seller.Equals(request.Bidder)) return Result.Fail<BidDto>(BidErrors.SameBidderAndSeller);

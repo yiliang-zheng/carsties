@@ -1,5 +1,6 @@
 ﻿using Domain.Bid;
 using Domain.Bid.Repository;
+using Infrastructure.Grpc;
 using Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ namespace Infrastructure
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IBidRepository, BidRepository>();
+            services.AddScoped<IGrpcAuctionClient, GrpcAuctionClient>();
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
