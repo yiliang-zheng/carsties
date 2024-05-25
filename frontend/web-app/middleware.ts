@@ -15,4 +15,6 @@ export default withAuth(
     },
   }
 );
-export const config = { matcher: ["/session"] };
+export const config = {
+  matcher: ["/session", "/auctions/create", "/auctions/update/:path*"],
+};

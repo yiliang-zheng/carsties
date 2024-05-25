@@ -23,5 +23,8 @@ public class DomainToDtoProfile:AutoMapper.Profile
                 opts => opts.MapFrom(src => src.Auction.Finished)
             );
 
+        CreateMap<Auction, AuctionDto>()
+            .ForMember(dest => dest.AuctionId,
+                opts => opts.MapFrom(src => src.Id));
     }
 }

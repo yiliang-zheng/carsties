@@ -1,8 +1,9 @@
 "use client";
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import { useForm } from "react-hook-form";
+
 import toast from "react-hot-toast";
 import Button from "@/app/_components/Core/Button";
 import FormInput from "@/app/_components/FormInput/FormInput";
@@ -10,47 +11,152 @@ import FormDateInput from "@/app/_components/FormDateInput/FormDateInput";
 
 import type { FieldValues } from "react-hook-form";
 import type { CreateAuctionPayload } from "@/server/schemas/createAuction";
+import type { Auction } from "@/server/schemas/auction";
+import type { UpdateAuctionPayload } from "@/server/schemas/updateAuction";
 
-const AuctionForm = () => {
-  const { control, handleSubmit, reset } = useForm({
+const formMode = ["create", "edit"] as const;
+type FormMode = (typeof formMode)[number];
+
+type Props = {
+  auction?: Auction;
+};
+
+const AuctionForm = ({ auction }: Props) => {
+  const { control, handleSubmit, setFocus, reset } = useForm({
     mode: "onTouched",
   });
 
+  const pathname = usePathname();
   const router = useRouter();
+  const trpcUtils = trpc.useUtils();
 
-  const { mutate, isLoading, error } = trpc.auctions.create.useMutation();
+  const {
+    mutate: createMutate,
+    isLoading: createLoading,
+    error: createError,
+  } = trpc.auctions.create.useMutation();
+
+  const {
+    mutate: updateMutate,
+    isLoading: updateLoading,
+    error: updateError,
+  } = trpc.auctions.update.useMutation();
+
+  const submitCreate = async (payload: CreateAuctionPayload) => {
+    await createMutate(payload, {
+      onSuccess: (insertedAuction) => {
+        toast.success("Auction created", {
+          icon: "👏",
+        });
+        reset();
+        router.push(`/auctions/details/${insertedAuction?.id}`, {
+          scroll: true,
+        });
+      },
+    });
+  };
+
+  const submitUpdate = async (payload: UpdateAuctionPayload) => {
+    await updateMutate(payload, {
+      onSuccess: ({ id, make, model, color, imageUrl, year, mileage }) => {
+        trpcUtils.auctions.get.invalidate({ id: id });
+        toast.success("Auction updated", {
+          icon: "👏",
+        });
+        reset({
+          make,
+          model,
+          color,
+          imageUrl,
+          year,
+          mileage,
+        });
+        router.push(`/auctions/details/${id}`, {
+          scroll: true,
+        });
+      },
+    });
+  };
+
   const submit = async (data: FieldValues) => {
     try {
-      const payload: CreateAuctionPayload = {
-        make: data["make"],
-        model: data["model"],
-        color: data["color"],
-        imageUrl: data["imageUrl"],
-        year: data["year"],
-        mileage: data["mileage"],
-        reservePrice: data["reservePrice"],
-        auctionEnd: data["auctionEnd"],
-      };
-      await mutate(payload, {
-        onSuccess: (insertedAuction) => {
-          toast.success("Auction created", {
-            icon: "👏",
-          });
-          reset();
-          router.push(`/auctions/details/${insertedAuction?.id}`, {
-            scroll: true,
-          });
-        },
-      });
+      if (currentMode === "create") {
+        const createPayload: CreateAuctionPayload = {
+          make: data["make"],
+          model: data["model"],
+          color: data["color"],
+          imageUrl: data["imageUrl"],
+          year: data["year"],
+          mileage: data["mileage"],
+          reservePrice: data["reservePrice"],
+          auctionEnd: data["auctionEnd"],
+        };
+        await submitCreate(createPayload);
+      } else {
+        const updatePayload: UpdateAuctionPayload = {
+          id: auction?.id ?? "",
+          color: data["color"],
+          make: data["make"],
+          model: data["model"],
+          mileage: data["mileage"],
+          year: data["year"],
+        };
+
+        await submitUpdate(updatePayload);
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    setFocus("make");
+  }, [setFocus]);
+
+  useEffect(() => {
+    if (!!auction) {
+      reset({
+        make: auction.make,
+        model: auction.model,
+        color: auction.color,
+        imageUrl: auction.imageUrl,
+        year: auction.year,
+        mileage: auction.mileage,
+      });
+    }
+  }, [auction]);
+
+  const currentMode = useMemo<FormMode>(() => {
+    //pathname is /auctions/create and auction prop is null
+    if (!auction && pathname === "/auctions/create") return "create";
+    return "edit";
+  }, [auction]);
+
+  const submitResult = useMemo(() => {
+    switch (currentMode) {
+      case "create":
+        return {
+          isLoading: createLoading,
+          error: createError,
+        };
+      case "edit":
+        return {
+          isLoading: updateLoading,
+          error: updateError,
+        };
+      default:
+        return {
+          isLoading: false,
+          error: null,
+        };
+    }
+  }, [createLoading, createError, updateLoading, updateError]);
+
   return (
     <>
-      {!isLoading && !!error && (
+      {!submitResult.isLoading && !!submitResult.error && (
         <div role="alert" className="alert alert-error">
-          <span>{JSON.stringify(error.data, null, 2)}</span>
+          <span>{JSON.stringify(submitResult.error.data, null, 2)}</span>
         </div>
       )}
       <form
@@ -98,39 +204,44 @@ const AuctionForm = () => {
             rules={{ required: "Mileage is required" }}
           />
         </div>
-        <FormInput
-          label="Image URL"
-          name="imageUrl"
-          showLabel
-          control={control}
-          type="text"
-          rules={{ required: "Image URL is required" }}
-        />
-        <div className="grid grid-cols-2 gap-3">
-          <FormInput
-            label="Reserve Price"
-            name="reservePrice"
-            showLabel
-            control={control}
-            type="number"
-            rules={{ required: "Reserve price is required" }}
-          />
+        {currentMode === "create" && (
+          <>
+            <FormInput
+              label="Image URL"
+              name="imageUrl"
+              showLabel
+              control={control}
+              type="text"
+              rules={{ required: "Image URL is required" }}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <FormInput
+                label="Reserve Price"
+                name="reservePrice"
+                showLabel
+                control={control}
+                type="number"
+                rules={{ required: "Reserve price is required" }}
+              />
 
-          <FormDateInput
-            label="Auction End Date"
-            name="auctionEnd"
-            showLabel
-            control={control}
-            dateFormat="dd MMMM yyyy h:mm a"
-            showTimeSelect
-            rules={{ required: "Auction end is required" }}
-          />
-        </div>
+              <FormDateInput
+                label="Auction End Date"
+                name="auctionEnd"
+                showLabel
+                control={control}
+                dateFormat="dd MMMM yyyy h:mm a"
+                showTimeSelect
+                rules={{ required: "Auction end is required" }}
+              />
+            </div>
+          </>
+        )}
+
         <div className="flex justify-between">
           <Button type="reset" outline color="dark">
             Cancel
           </Button>
-          <Button type="submit" color="dark" isLoading={isLoading}>
+          <Button type="submit" color="dark" isLoading={submitResult.isLoading}>
             Submit
           </Button>
         </div>

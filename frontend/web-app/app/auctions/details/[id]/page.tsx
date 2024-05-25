@@ -1,6 +1,5 @@
 import AuctionDetail from "@/app/_components/AuctionDetail/AuctionDetail";
 import { createServerClient } from "@/app/_trpc/serverClient";
-import { Auction } from "@/server/schemas/auction";
 
 type Props = {
   params: { id: string };
@@ -9,8 +8,6 @@ type Props = {
 export default async function Details({ params }: Props) {
   const serverClient = await createServerClient();
   const data = await serverClient.auctions.get({ id: params.id });
-  //const data = await serverClient.auctions.list({});
-  console.log(data);
 
   return <AuctionDetail auction={data} id={params.id} />;
 }

@@ -27,7 +27,7 @@ public class Item : EntityBase
         Model = Guard.Against.NullOrEmpty(model, nameof(model));
         Year = Guard.Against.NegativeOrZero(year, nameof(year));
         Color = Guard.Against.NullOrEmpty(color, nameof(color));
-        Mileage = Guard.Against.NegativeOrZero(mileage, nameof(mileage));
+        Mileage = Guard.Against.Negative(mileage, nameof(mileage));
         ImageUrl = Guard.Against.NullOrEmpty(imageUrl, nameof(imageUrl));
     }
 

@@ -60,7 +60,7 @@ async function put<TOutput, TPayload>(
 ): Promise<TOutput> {
   const fetchOptions: RequestInit = {
     method: "PUT",
-    headers: constructHeaders(),
+    headers: constructHeaders(accessToken),
     body: JSON.stringify(payload),
   };
 
@@ -69,18 +69,16 @@ async function put<TOutput, TPayload>(
   return data;
 }
 
-async function del<TOutput>(
-  url: string,
-  accessToken?: string
-): Promise<TOutput> {
+async function del(url: string, accessToken?: string): Promise<void> {
   const fetchOptions: RequestInit = {
     method: "DELETE",
     headers: constructHeaders(accessToken),
   };
 
   const response = await fetch(`${baseUrl}${url}`, fetchOptions);
-  const data = await handleResponse<TOutput>(response);
-  return data;
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
 }
 export const fetchWrapper = {
   get,

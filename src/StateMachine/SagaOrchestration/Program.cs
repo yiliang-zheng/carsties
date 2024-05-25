@@ -6,6 +6,7 @@ using SagaOrchestration.DbContext;
 using SagaOrchestration.StateInstances;
 using SagaOrchestration.StateMachines;
 using Serilog;
+using Shared.Domain.Messages;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Logging.AddSerilog();
 
 builder.Services.AddMassTransit(config =>
 {
+    config.AddRequestClient<CheckAuctionFinish>();
     config.AddSagaStateMachine<FinishAuctionStateMachine, FinishAuctionStateInstance>()
         .EntityFrameworkRepository(repoConfigurator =>
         {
@@ -62,5 +64,19 @@ builder.Services.AddHostedService<Worker>();
 
 var host = builder
     .Build();
+
+//if (builder.Environment.IsDevelopment())
+//{
+//    try
+//    {
+//        var dbContext = host.Services.GetRequiredService<StateMachineDbContext>();
+//        await dbContext.Database.MigrateAsync();
+//    }
+//    catch (Exception e)
+//    { 
+//        Log.Logger.Error("Error occurred during database migration: {Exception}", e);
+//    }
+    
+//}
 
 host.Run();

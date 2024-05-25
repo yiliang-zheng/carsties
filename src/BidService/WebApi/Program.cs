@@ -2,6 +2,10 @@ using Infrastructure;
 using Serilog;
 using System.Reflection;
 using Application;
+using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using WebApi.Consumers;
 using WebApi.Extensions;
 
 namespace WebApi
@@ -22,6 +26,44 @@ namespace WebApi
                 config.ReadFrom.Configuration(context.Configuration);
             });
 
+            //mass transit
+            builder.Services.AddMassTransit(config =>
+            {
+                config.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
+                config.AddEntityFrameworkOutbox<AppDbContext>(outboxConfigurator =>
+                {
+                    outboxConfigurator.QueryDelay = TimeSpan.FromSeconds(10);
+                    outboxConfigurator.UsePostgres();
+                    outboxConfigurator.UseBusOutbox();
+                });
+
+                config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("bids", false));
+                config.UsingRabbitMq((context, busConfigurator) =>
+                {
+                    busConfigurator.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+                    {
+                        host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+                        host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+                    });
+
+                    busConfigurator.ConfigureEndpoints(context);
+                });
+            });
+
+            //jwt auth
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(config =>
+                {
+                    config.Authority = builder.Configuration["IdentityService:Authority"];
+                    config.RequireHttpsMetadata = false;
+                    config.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = false,
+                        NameClaimType = "username",
+                    };
+                });
+
             builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddAuthorization();
@@ -37,16 +79,16 @@ namespace WebApi
             }
 
             // Configure the HTTP request pipeline.
-
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            var grouped = app.MapGroup("/api/bids").WithTags("Bids");
+            app.MapEndpoints(grouped);
 
             if (!app.Environment.IsProduction())
             {
                 await app.Services.MigrateDatabase();
             }
-
-            var grouped = app.MapGroup("/api/bids");
-            app.MapEndpoints(grouped);
             
             await app.RunAsync();
         }

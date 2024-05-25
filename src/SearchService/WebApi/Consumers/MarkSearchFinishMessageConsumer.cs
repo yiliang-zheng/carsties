@@ -6,45 +6,42 @@ using WebApi.Repositories;
 
 namespace WebApi.Consumers;
 
-public class MarkSearchFinishMessageConsumer: IConsumer<MarkSearchFinishMessage>
+public class MarkSearchFinishMessageConsumer(
+    ILogger<MarkSearchFinishMessageConsumer> logger,
+    ISearchRepository repository,
+    IPublishEndpoint publishEndpoint)
+    : IConsumer<MarkSearchFinishMessage>
 {
-    private readonly ILogger<AuctionCreatedConsumer> _logger;
-    private readonly ISearchRepository _repository;
-    private readonly IPublishEndpoint _publishEndpoint;
 
-    public MarkSearchFinishMessageConsumer(ILogger<AuctionCreatedConsumer> logger, ISearchRepository repository, IPublishEndpoint publishEndpoint)
-    {
-        _logger = logger;
-        _repository = repository;
-        _publishEndpoint = publishEndpoint;
-    }
     public async Task Consume(ConsumeContext<MarkSearchFinishMessage> context)
     {
         try
         {
-            this._logger.LogInformation(
+            logger.LogInformation(
                 "--> Search service received message: {Event} with Auction ID: {AuctionID}",
                 nameof(MarkAuctionFinishMessage),
                 context.Message.AuctionId
             );
 
-            await this._repository.MarkFinished(
+            await repository.MarkFinished(
                 context.Message.AuctionId,
                 context.Message.Status,
                 context.Message.Winner,
                 context.Message.SoldAmount
             );
 
-            await this._publishEndpoint.Publish(new SearchMarkFinished
+            await publishEndpoint.Publish(new SearchMarkFinished
             {
                 AuctionId = context.Message.AuctionId,
                 CorrelationId = context.Message.CorrelationId,
                 CreatedDate = DateTimeOffset.UtcNow
             });
+
+            logger.LogInformation("--> Search Service: Published {Event} with CorrelationId: {CorrelationId}", nameof(SearchMarkFinished), context.Message.CorrelationId);
         }
         catch (Exception e)
         {
-            await this._publishEndpoint.Publish(new SearchMarkFinishedFailed
+            await publishEndpoint.Publish(new SearchMarkFinishedFailed
             {
                 AuctionId = context.Message.AuctionId,
                 CorrelationId = context.Message.CorrelationId,

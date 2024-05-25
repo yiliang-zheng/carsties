@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { revalidatePath } from "next/cache";
 import { auctionSchema } from "@/server/schemas/auction";
 import { updateAuctionPayloadSchema } from "@/server/schemas/updateAuction";
 import { fetchWrapper, getErrorMessage } from "@/server/lib/fetchWrapper";
@@ -33,6 +34,7 @@ export const update = async (
       updatePayload,
       accessToken
     );
+    revalidatePath(`/auctions/details/${id}`);
   } catch (error) {
     throw new TRPCError({
       code: "BAD_REQUEST",

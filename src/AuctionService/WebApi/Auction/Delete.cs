@@ -6,7 +6,7 @@ using IMapper = AutoMapper.IMapper;
 
 namespace WebApi.Auction;
 
-public class Delete:Endpoint<DeleteAuctionRequest, Result>
+public class Delete : EndpointWithoutRequest
 {
     private readonly ISender _sender;
     private readonly IMapper _mapper;
@@ -29,10 +29,9 @@ public class Delete:Endpoint<DeleteAuctionRequest, Result>
         Delete(DeleteAuctionRequest.Route);
     }
 
-    public override async Task HandleAsync(DeleteAuctionRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        req.Seller = CurrentUser;
-        var command = this._mapper.Map<DeleteAuctionCommand>(req);
+        var command = new DeleteAuctionCommand(Route<Guid>("Id"), CurrentUser);
         var result = await this._sender.Send(command, ct);
         if (result.IsFailed)
         {

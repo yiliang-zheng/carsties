@@ -1,12 +1,12 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using Domain.Bid;
+using Domain.Bid.Repository;
 using Microsoft.EntityFrameworkCore;
-using Shared.Domain.Interface;
 
 namespace Infrastructure.Repository;
 
-public class BidRepository:IRepository<Bid>
+public class BidRepository : IBidRepository
 {
     private readonly AppDbContext _context;
 
@@ -44,8 +44,29 @@ public class BidRepository:IRepository<Bid>
         return Task.CompletedTask;
     }
 
-    private IQueryable<Bid> ApplySpecification(ISpecification<Bid> specification)
+    public async Task<Auction?> GetAuctionById(ISpecification<Auction> spec)
     {
-        return SpecificationEvaluator.Default.GetQuery(this._context.Set<Bid>().AsQueryable(), specification);
+        var result = await ApplySpecification(spec).FirstOrDefaultAsync();
+        return result;
+
     }
+
+    public async Task<Auction> CreateAuction(Auction auction)
+    {
+        await _context.Auctions.AddAsync(auction);
+        return auction;
+    }
+
+    public Task UpdateAuction(Auction auction)
+    {
+        _context.Update(auction);
+        return Task.CompletedTask;
+    }
+
+    private IQueryable<T> ApplySpecification<T>(ISpecification<T> specification) where T: class
+    {
+        return SpecificationEvaluator.Default.GetQuery(this._context.Set<T>().AsQueryable(), specification);
+    }
+
+    
 }

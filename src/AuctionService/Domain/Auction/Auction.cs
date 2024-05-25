@@ -85,7 +85,7 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
         this.AuctionStatus = newStatus;
     }
 
-    public void FinishAuction(bool itemSold,int? amount, string winner)
+    public void FinishAuction(bool itemSold, int? amount, string winner)
     {
         if (itemSold)
         {
@@ -97,7 +97,7 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
                     break;
                 case null:
                     throw new ArgumentException("Invalid sold amount. Sold amount cannot be null", nameof(amount));
-                case {} x when x < ReservePrice:
+                case { } x when x < ReservePrice:
                     throw new ArgumentException("Invalid sold amount. Sold amount must meet reserve price or more.",
                         nameof(amount));
                     break;
@@ -109,7 +109,7 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
             { } x when x >= this.ReservePrice => Status.Finished,
             _ => Status.ReserveNotMet
         };
-        
+
     }
 
     /// <summary>
@@ -129,12 +129,12 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
 
         //make sure bid amount > 0
         Guard.Against.AgainstExpression<int>(p => p > 0, bidAmount, "Bid amount must be greater than 0");
-        
+
         //make sure bid status is accepted
         Guard.Against.InvalidInput(
             bidStatus,
             nameof(bidStatus),
-            p => p == BidStatus.Accepted,
+            p => p == BidStatus.Accepted || p == BidStatus.AcceptedBelowReserve,
             "Bid status must be Accepted"
         );
 
@@ -145,5 +145,5 @@ public class Auction : EntityBase, IAggregateRoot, IAuditableEntity
         }
     }
 
-    
+
 }

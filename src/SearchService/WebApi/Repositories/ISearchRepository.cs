@@ -12,4 +12,8 @@ public interface ISearchRepository
     Task UpdateItem(Guid id, string make, string model, string color, int mileage, int year);
 
     Task MarkFinished(Guid id, string status, string winner, int? soldAmount);
+
+    Task UpdateCurrentHighestBid(Guid id, int amount);
+
+    Task RollbackFinishedAuction(Guid id);
 }

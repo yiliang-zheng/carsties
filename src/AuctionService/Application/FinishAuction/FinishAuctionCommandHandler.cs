@@ -2,9 +2,7 @@
 using Domain.Auction;
 using Domain.Auction.Specification;
 using FluentResults;
-using MassTransit;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Shared.Domain.Interface;
 
 namespace Application.FinishAuction;

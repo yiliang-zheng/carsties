@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
-using Domain.Bid;
+using Domain.Bid.Repository;
 using Domain.Bid.Specification;
 using FluentResults;
 using MediatR;
-using Shared.Domain.Interface;
 
 namespace Application.ListBids;
 
-public class ListBidsCommandHandler(IRepository<Bid> bidRepository, IMapper mapper) : IRequestHandler<ListBidsCommand, Result<List<BidDto>>>
+public class ListBidsCommandHandler(IBidRepository bidRepository, IMapper mapper) : IRequestHandler<ListBidsCommand, Result<List<BidDto>>>
 {
     
     public async Task<Result<List<BidDto>>> Handle(ListBidsCommand request, CancellationToken cancellationToken)

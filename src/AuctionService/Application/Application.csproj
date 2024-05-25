@@ -21,6 +21,8 @@
     <Folder Include="CreateAuction\" />
     <Folder Include="DeleteAuction\" />
     <Folder Include="GetAuction\" />
+    <Folder Include="RollbackFinishAuction\" />
+    <Folder Include="SearchFinishAuction\" />
     <Folder Include="UpdateAuction\" />
   </ItemGroup>
 

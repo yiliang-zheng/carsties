@@ -78,4 +78,30 @@ public class SearchRepository : ISearchRepository
             .Modify(p => p.SoldAmount, soldAmount)
             .ExecuteAsync();
     }
+
+    public async Task UpdateCurrentHighestBid(Guid id, int amount)
+    {
+        var auction = await DB.Find<Item>()
+            .MatchID(id)
+            .ExecuteFirstAsync();
+
+        if (auction is null) return;
+
+        //do not update if current highest bid amount is greater than amount
+        if (auction.CurrentHighBid >= amount) return;
+
+        auction.CurrentHighBid = amount;
+        auction.UpdatedAt = DateTime.UtcNow;
+        await auction.SaveAsync();
+    }
+
+    public async Task RollbackFinishedAuction(Guid id)
+    {
+        await DB.Update<Item>()
+            .MatchID(id)
+            .Modify(p => p.Status, "Live")
+            .Modify(p => p.Winner, string.Empty)
+            .Modify(p => p.SoldAmount, null)
+            .ExecuteAsync();
+    }
 }

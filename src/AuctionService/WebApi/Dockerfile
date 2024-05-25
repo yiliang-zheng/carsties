@@ -30,6 +30,11 @@ COPY ["src/IdentityService/Domain/Domain.csproj", "src/IdentityService/Domain/"]
 COPY ["src/SearchService/WebApi/WebApi.csproj", "src/SearchService/WebApi/"]
 #State machine service
 COPY ["src/StateMachine/SagaOrchestration/SagaOrchestration.csproj", "src/StateMachine/SagaOrchestration/"]
+#Bid Service
+COPY ["src/BidService/WebApi/WebApi.csproj", "src/BidService/WebApi/"]
+COPY ["src/BidService/Application/Application.csproj", "src/BidService/Application/"]
+COPY ["src/BidService/Infrastructure/Infrastructure.csproj", "src/BidService/Infrastructure/"]
+COPY ["src/BidService/Domain/Domain.csproj", "src/BidService/Domain/"]
 
 #Restore package deps
 RUN dotnet restore "Carsties.sln"

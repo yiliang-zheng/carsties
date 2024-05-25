@@ -14,7 +14,8 @@ namespace Web
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("auctionSvc", "Auction Web Service")
+                new ApiScope("auctionSvc", "Auction Web Service"),
+                new ApiScope("bidSvc", "Bidding Web Service")
             };
 
         public static IEnumerable<Client> Clients =>
@@ -29,7 +30,7 @@ namespace Web
                     //ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
                     RequireClientSecret = false,
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "auctionSvc", "offline_access" },
+                    AllowedScopes = { "openid", "profile", "auctionSvc", "bidSvc", "offline_access" },
                     RedirectUris = new List<string>
                     {
                         "https://oauth.pstmn.io/v1/browser-callback"
@@ -50,7 +51,7 @@ namespace Web
                         "http://localhost:3000/api/auth/callback/id-server"
                     },
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "auctionSvc", "offline_access"},
+                    AllowedScopes = {"openid", "profile", "auctionSvc", "bidSvc", "offline_access"},
                     AlwaysIncludeUserClaimsInIdToken = true,
                 }
             };

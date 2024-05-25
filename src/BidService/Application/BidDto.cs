@@ -4,6 +4,8 @@
     {
         public Guid Id { get; init; }
 
+        public string Bidder { get; init; } = null!;
+
         public DateTimeOffset BidDateTime { get; init; }
 
         public int Amount { get; init; }

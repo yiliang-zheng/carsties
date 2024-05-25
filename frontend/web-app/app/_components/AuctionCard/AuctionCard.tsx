@@ -1,5 +1,6 @@
 import CountdownTimer from "@/app/_components/CountdownTimer/CountdownTimer";
 import AuctionCardImage from "@/app/_components/AuctionCard/AuctionCardImage";
+import Link from "next/link";
 import type { Auction } from "@/server/schemas/auction";
 
 type Props = {
@@ -10,7 +11,9 @@ const AuctionCard = ({ auction }: Props) => {
   return (
     <div className="card bg-base-100 shadow-xl h-full group">
       <figure className="!items-start basis-2/3 relative h-full">
-        <AuctionCardImage imageUrl={auction.imageUrl} title={auction.make} />
+        <Link href={`/auctions/details/${auction.id}`}>
+          <AuctionCardImage imageUrl={auction.imageUrl} title={auction.make} />
+        </Link>
         <div className="absolute top-2 right-2">
           <CountdownTimer auctionEnd={auction.auctionEnd} />
         </div>

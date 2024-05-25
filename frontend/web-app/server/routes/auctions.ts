@@ -4,8 +4,10 @@ import { get } from "@/server/lib/auctions/get";
 import { list } from "@/server/lib/auctions/list";
 import { create } from "@/server/lib/auctions/create";
 import { update } from "@/server/lib/auctions/update";
+import { deleteAuction } from "@/server/lib/auctions/deleteAuction";
 import { createAuctionPayloadSchema } from "@/server/schemas/createAuction";
 import { updateAuctionPayloadSchema } from "@/server/schemas/updateAuction";
+import { deleteAuctionPayloadSchema } from "../schemas/deleteAuction";
 
 export const auctionsRoute = router({
   get: publicProcedure
@@ -47,5 +49,11 @@ export const auctionsRoute = router({
     .input(updateAuctionPayloadSchema)
     .mutation(
       async ({ input, ctx }) => await update(input, ctx.accessToken ?? "")
+    ),
+  delete: protectedProcedure
+    .input(deleteAuctionPayloadSchema)
+    .mutation(
+      async ({ input, ctx }) =>
+        await deleteAuction(input, ctx.accessToken ?? "")
     ),
 });

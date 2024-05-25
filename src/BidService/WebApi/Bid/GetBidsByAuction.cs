@@ -15,6 +15,6 @@ public class GetBidsByAuction() : IEndpoint
 
             return Results.Ok(result.Value);
         })
-        .WithTags("Bids");
+        .AllowAnonymous();
     }
 }
