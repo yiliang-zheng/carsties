@@ -43,13 +43,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SagaOrchestration", "src\St
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BidService", "BidService", "{4670180D-BA40-4DE1-B183-23B1FF2C426F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\BidService\Domain\Domain.csproj", "{C7BB1C6C-4265-45CE-BF2D-B191B2856EBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\BidService\Domain\Domain.csproj", "{C7BB1C6C-4265-45CE-BF2D-B191B2856EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\BidService\Application\Application.csproj", "{C6DB1D4F-82EF-4DF5-9E3A-A554BC8A369A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "src\BidService\Application\Application.csproj", "{C6DB1D4F-82EF-4DF5-9E3A-A554BC8A369A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\BidService\Infrastructure\Infrastructure.csproj", "{50F63E9D-F4E7-46AB-A9E2-770E248F2AB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "src\BidService\Infrastructure\Infrastructure.csproj", "{50F63E9D-F4E7-46AB-A9E2-770E248F2AB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "src\BidService\WebApi\WebApi.csproj", "{DE262CB9-3C49-4262-93AF-4A4AECB3AF8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "src\BidService\WebApi\WebApi.csproj", "{DE262CB9-3C49-4262-93AF-4A4AECB3AF8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
