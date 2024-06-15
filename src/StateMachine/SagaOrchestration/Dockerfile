@@ -19,6 +19,7 @@ COPY ["src/AuctionService/Domain/Domain.csproj", "src/AuctionService/Domain/"]
 #Common
 COPY ["src/Common/Shared.Constants/Shared.Constants.csproj", "src/Common/Shared.Constants/"]
 COPY ["src/Common/Shared.Domain/Shared.Domain.csproj", "src/Common/Shared.Domain/"]
+COPY ["src/Common/Shared.Extensions/Shared.Extensions.csproj", "src/Common/Shared.Extensions"]
 #Gateway
 COPY ["src/GatewayService/Web/Web.csproj", "src/GatewayService/Web/"]
 #Identity Server 
@@ -42,6 +43,7 @@ RUN dotnet restore "Carsties.sln"
 #Copy the app folders
 COPY ["src/StateMachine/SagaOrchestration", "src/StateMachine/SagaOrchestration"]
 COPY ["src/Common/Shared.Domain", "src/Common/Shared.Domain"]
+COPY ["src/Common/Shared.Extensions", "src/Common/Shared.Extensions"]
 WORKDIR "/src/src/StateMachine/SagaOrchestration"
 RUN dotnet build "./SagaOrchestration.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

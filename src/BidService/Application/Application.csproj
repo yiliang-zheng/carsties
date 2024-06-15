@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Shared.Domain\Shared.Domain.csproj" />
+    <ProjectReference Include="..\..\Common\Shared.Extensions\Shared.Extensions.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 

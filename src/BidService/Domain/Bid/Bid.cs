@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using Shared.Domain;
+using Shared.Domain.Events;
 using Shared.Domain.Interface;
 
 namespace Domain.Bid;
@@ -27,6 +28,22 @@ public class Bid : EntityBase, IAggregateRoot, IAuditableEntity
         BidTime = bidTime;
         Amount = Guard.Against.NegativeOrZero(amount);
         AuctionId = Guard.Against.Default(auctionId);
+    }
+
+    public static Bid Create(string bidder, DateTimeOffset bidTime, int amount, Guid auctionId)
+    {
+        var bid = new Bid(Guid.NewGuid(), bidder, bidTime, amount, auctionId);
+        bid.RegisterDomainEvent(new BidPlaced
+        {
+            BidId = bid.Id,
+            Amount = bid.Amount,
+            AuctionId = bid.AuctionId,
+            Bidder = bid.Bidder,
+            BidStatus = bid.BidStatus.Name,
+            BidTime = bid.BidTime
+        });
+
+        return bid;
     }
 
     public void SetAuction(Auction auction)
