@@ -24,8 +24,8 @@ public class GrpcAuctionService(ISender sender,ILogger<GrpcAuctionService> logge
                 ReservePrice = auction.Value.ReservePrice,
                 AuctionEnd = auction.Value.AuctionEnd.ToString("O", CultureInfo.InvariantCulture),
                 Finished = auction.Value.Status.Equals(Domain.Auction.Status.Finished.Name) || auction.Value.Status.Equals(Domain.Auction.Status.ReserveNotMet.Name),
-                ItemSold = auction.Value.SoldAmount > 0,
-                Winner = auction.Value.Winner
+                ItemSold = auction.Value.SoldAmount is > 0,
+                Winner = string.IsNullOrEmpty(auction.Value.Winner) ? string.Empty : auction.Value.Winner
             }
         };
         return result;

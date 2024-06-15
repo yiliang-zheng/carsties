@@ -36,8 +36,32 @@ services:
       - RabbitMq__Password=guest
       - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;User ID=postgres;Password=postgrespw;Database=auctions
       - IdentityService__Authority=http://identity-svc:8080
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
+      - Kestrel__Endpoints__Grpc__Url=http://+:7777
+      - Kestrel__Endpoints__WebApi__Protocols=Http1
+      - Kestrel__Endpoints__WebApi__Url=http://+:8080
     ports:
       - 7001:8080
+      - 7777:7777
+    depends_on:
+      - postgres
+      - rabbitmq
+  bids-svc:
+    image: yiliangzheng0729/carsties-bids-svc:latest
+    build:
+      context: .
+      dockerfile: src/BidService/WebApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;User ID=postgres;Password=postgrespw;Database=bids
+      - IdentityService__Authority=http://identity-svc:8080
+      - GrpcAuction=http://auction-svc:7777
+    ports:
+      - 7003:8080
     depends_on:
       - postgres
       - rabbitmq
