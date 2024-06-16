@@ -13,9 +13,9 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
     private Event<MarkAuctionFinishMessage> MarkAuctionFinishMessage { get; set; }
 
     //Events
-    public Event<AuctionFinished> AuctionFinishedEvent { get; set; }
+    public Event<AuctionMarkFinished> AuctionMarkFinishedEvent { get; set; }
 
-    public Event<AuctionFinishFailed> AuctionFinishFailedEvent { get; set; }
+    public Event<AuctionMarkFinishFailed> AuctionMarkFinishFailedEvent { get; set; }
 
     public Event<SearchMarkFinished> SearchMarkFinishedEvent { get; set; }
 
@@ -54,11 +54,11 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
         );
 
         Event(
-            () => AuctionFinishedEvent,
+            () => AuctionMarkFinishedEvent,
             p => p.CorrelateById(context => context.Message.CorrelationId));
 
         Event(
-            () => AuctionFinishFailedEvent,
+            () => AuctionMarkFinishFailedEvent,
             p => p.CorrelateById(context => context.Message.CorrelationId)
         );
 
@@ -82,14 +82,14 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
 
         Initially(
             When(MarkAuctionFinishMessage)
-                //.Then(
-                //    context =>
-                //    {
-                //        _logger.ForContext("CorrelationId", context.Saga.CorrelationId)
-                //            .Information(
-                //            "MarkAuctionFinishMessage received in FinishAuctionStateMachine: {ContextSaga} ",
-                //            context.Saga);
-                //    })
+                .Then(
+                    context =>
+                    {
+                        _logger.ForContext("CorrelationId", context.Saga.CorrelationId)
+                            .Information(
+                            "MarkAuctionFinishMessage received in FinishAuctionStateMachine: {ContextSaga} ",
+                            context.Saga);
+                    })
                 .Then(
                     context =>
                     {
@@ -98,37 +98,37 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
                     })
                 .TransitionTo(AuctionFinishRequestSent)
                 .Publish(context => new MarkBidFinishMessage(context.Saga.CorrelationId, context.Message.AuctionId))
-                //.Then(context =>
-                //{
-                //    this._logger
-                //        .ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //            "MarkBidFinishMessage sent in FinishAuctionStateMachine: {ContextSaga}",
-                //            context.Saga);
-                //})
+                .Then(context =>
+                {
+                    this._logger
+                        .ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                            "MarkBidFinishMessage sent in FinishAuctionStateMachine: {ContextSaga}",
+                            context.Saga);
+                })
         );
 
         //bid svc done
         During(AuctionFinishRequestSent,
             Ignore(MarkAuctionFinishMessage),
             When(BidMarkFinishedEvent)
-                //.Then(context =>
-                //{
-                //    _logger
-                //        .ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //            "BidMarkFinished received in FinishAuctionStateMachine: {ContextSaga} ",
-                //            context.Saga);
-                //})
+                .Then(context =>
+                {
+                    _logger
+                        .ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                            "BidMarkFinished received in FinishAuctionStateMachine: {ContextSaga} ",
+                            context.Saga);
+                })
                 .TransitionTo(BidMarkFinished)
-                //.Then(context =>
-                //{
-                //    this._logger.ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //            "Transit state into {SagaState}",
-                //            context.Saga.CurrentState
-                //        );
-                //})
+                .Then(context =>
+                {
+                    this._logger.ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                            "Transit state into {SagaState}",
+                            context.Saga.CurrentState
+                        );
+                })
                 .Send(
                     new Uri("queue:mark-auction-finish"),
                     context => new FinishAuctionMessage
@@ -138,40 +138,41 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
                         Amount = context.Message.SoldAmount,
                         ItemSold = context.Message.ItemSold,
                         Winner = context.Message.Winner,
+                        Seller = context.Message.Seller
                     }),
             When(BidMarkFinishedFailedEvent)
-                //.Then(context =>
-                //{
-                //    this._logger
-                //        .ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //            "{Event} received in FinishAuctionStateMachine: {ContextSaga} ",
-                //            nameof(BidMarkFinishedFailedEvent),
-                //            context.Saga);
-                //})
+                .Then(context =>
+                {
+                    this._logger
+                        .ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                            "{Event} received in FinishAuctionStateMachine: {ContextSaga} ",
+                            nameof(BidMarkFinishedFailedEvent),
+                            context.Saga);
+                })
                 .TransitionTo(BidMarkFinishedFailed));
 
         //auction svc done
         During(BidMarkFinished,
             Ignore(MarkAuctionFinishMessage),
-            When(AuctionFinishedEvent)
-                //.Then(context =>
-                //{
-                //    _logger
-                //        .ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //        "AuctionFinishedEvent received in FinishAuctionStateMachine: {ContextSaga} ",
-                //        context.Saga);
-                //})
+            When(AuctionMarkFinishedEvent)
+                .Then(context =>
+                {
+                    _logger
+                        .ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                        "AuctionFinishedEvent received in FinishAuctionStateMachine: {ContextSaga} ",
+                        context.Saga);
+                })
                 .TransitionTo(AuctionFinishMarked)
-                //.Then(context =>
-                //{
-                //    this._logger.ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //        "Transit state into {SagaState}",
-                //        context.Saga.CurrentState
-                //    );
-                //})
+                .Then(context =>
+                {
+                    this._logger.ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                        "Transit state into {SagaState}",
+                        context.Saga.CurrentState
+                    );
+                })
                 .Send(
                     new Uri("queue:mark-search-auction-finish"),
                     context => new MarkSearchFinishMessage
@@ -180,7 +181,9 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
                         AuctionId = context.Message.AuctionId,
                         Winner = context.Message.Winner,
                         Status = context.Message.Status,
-                        SoldAmount = context.Message.SoldAmount
+                        SoldAmount = context.Message.SoldAmount,
+                        Seller = context.Message.Seller,
+                        ItemSold = context.Message.ItemSold
                     })
         );
 
@@ -188,23 +191,31 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
         During(AuctionFinishMarked,
             Ignore(MarkAuctionFinishMessage),
             When(SearchMarkFinishedEvent)
-                //.Then(context =>
-                //{
-                //    this._logger
-                //        .ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //        "{Event} received in FinishAuctionStateMachine: {ContextSaga} ",
-                //        nameof(SearchMarkFinishedEvent),
-                //        context.Saga);
-                //})
+                .Then(context =>
+                {
+                    this._logger
+                        .ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                        "{Event} received in FinishAuctionStateMachine: {ContextSaga} ",
+                        nameof(SearchMarkFinishedEvent),
+                        context.Saga);
+                })
                 .TransitionTo(SearchMarkFinished)
-                //.Then(context =>
-                //{
-                //    this._logger.ForContext("CorrelationId", context.Saga.CorrelationId)
-                //        .Information(
-                //            "Transit state into {SagaState}",
-                //            context.Saga.CurrentState);
-                //})
+                .Then(context =>
+                {
+                    this._logger.ForContext("CorrelationId", context.Saga.CorrelationId)
+                        .Information(
+                            "Transit state into {SagaState}",
+                            context.Saga.CurrentState);
+                })
+                .Publish(context=> new AuctionFinished
+                {
+                    AuctionId = context.Message.AuctionId,
+                    Winner = context.Message.Winner,
+                    Amount = context.Message.SoldAmount,
+                    ItemSold = context.Message.ItemSold,
+                    Seller = context.Message.Seller
+                })
                 .Finalize(),
             When(SearchMarkFinishedFailedEvent)
                 .Then(context =>
@@ -222,7 +233,7 @@ public class FinishAuctionStateMachine : MassTransitStateMachine<FinishAuctionSt
         DuringAny(
             When(BidMarkFinishedFailedEvent)
                 .Publish(context => new MarkAuctionFinishFailed(context.Message.AuctionId, context.Saga.CorrelationId)),
-            When(AuctionFinishFailedEvent)
+            When(AuctionMarkFinishFailedEvent)
                 .Publish(context =>
                 new MarkAuctionFinishFailed(context.Message.AuctionId, context.Saga.CorrelationId)),
             When(SearchMarkFinishedFailedEvent)

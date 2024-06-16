@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Hub.Consumers;
+using MassTransit;
 using MassTransit.Configuration;
 
 namespace Hub.Config;
@@ -9,7 +10,7 @@ public static class MasstransitConfig
     {
         services.AddMassTransit(busConfigurator =>
         {
-            busConfigurator.AddConsumers(typeof(Program).Assembly);
+            busConfigurator.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
             busConfigurator.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("notification", false));
             busConfigurator.UsingRabbitMq((context, rabbitmqConfigurator) =>
             {

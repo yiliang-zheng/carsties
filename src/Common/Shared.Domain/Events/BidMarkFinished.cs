@@ -14,6 +14,8 @@ public class BidMarkFinished : CorrelatedBy<Guid>
 
     public bool ItemSold { get; init; }
 
+    public string Seller { get; init; }
+
     public DateTimeOffset CreatedDate { get; init; }
 }
 

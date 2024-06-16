@@ -15,4 +15,5 @@ public class FinishAuctionMessage : CorrelatedBy<Guid>
     public string Seller { get; init; }
 
     public int? Amount { get; init; }
+
 }

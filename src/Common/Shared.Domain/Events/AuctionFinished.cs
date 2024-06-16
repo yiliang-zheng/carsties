@@ -1,29 +1,13 @@
-﻿using MassTransit;
+﻿namespace Shared.Domain.Events;
 
-namespace Shared.Domain.Events;
-
-public class AuctionFinished : CorrelatedBy<Guid>
+public record AuctionFinished
 {
-    public Guid CorrelationId { get; set; }
-
     public Guid AuctionId { get; init; }
+    public bool ItemSold { get; init; }
 
     public string Winner { get; init; }
 
-    public int? SoldAmount { get; set; }
+    public string Seller { get; init; }
 
-    public string Status { get; set; }
-
-    public DateTimeOffset CreatedDate { get; set; }
-}
-
-public class AuctionFinishFailed : CorrelatedBy<Guid>
-{
-    public Guid CorrelationId { get; set; }
-
-    public Guid AuctionId { get; init; }
-
-    public Exception FailedException { get; set; }
-
-    public DateTimeOffset CreatedDate { get; set; }
-}
+    public int? Amount { get; init; }
+};

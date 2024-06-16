@@ -10,7 +10,7 @@ namespace Hub
         {
             var builder = WebApplication.CreateBuilder(args);
             //serilog
-            builder.Host.AddSerilog(builder.Configuration);
+            builder.Host.AddSerilog();
             //masstransit
             builder.Services.AddMasstransit(builder.Configuration);
             //signal r

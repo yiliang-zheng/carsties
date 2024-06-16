@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MassTransit;
+﻿using MassTransit;
 using Shared.Domain.Events;
 using Shared.Domain.Messages;
 using WebApi.Repositories;
@@ -34,6 +33,10 @@ public class MarkSearchFinishMessageConsumer(
             {
                 AuctionId = context.Message.AuctionId,
                 CorrelationId = context.Message.CorrelationId,
+                SoldAmount = context.Message.SoldAmount,
+                ItemSold = context.Message.ItemSold,
+                Seller = context.Message.Seller,
+                Winner = context.Message.Winner,
                 CreatedDate = DateTimeOffset.UtcNow
             });
 

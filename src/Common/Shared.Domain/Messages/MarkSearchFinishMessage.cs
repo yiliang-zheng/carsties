@@ -13,4 +13,8 @@ public class MarkSearchFinishMessage : CorrelatedBy<Guid>
     public string Winner { get; init; }
 
     public int? SoldAmount { get; init; }
+
+    public string Seller { get; init; }
+
+    public bool ItemSold { get; init; }
 }

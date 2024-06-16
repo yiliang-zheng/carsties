@@ -22,21 +22,23 @@ public class FinishAuctionMessageConsumer(ISender sender, IPublishEndpoint publi
             var result = await sender.Send(command);
             if (result.IsFailed) throw new Exception("failed to mark auction as finished");
 
-            await publishEndpoint.Publish(new AuctionFinished
+            await publishEndpoint.Publish(new AuctionMarkFinished
             {
                 AuctionId = context.Message.AuctionId,
                 CorrelationId = context.Message.CorrelationId,
                 CreatedDate = DateTimeOffset.UtcNow,
                 SoldAmount = result.Value.SoldAmount,
                 Status = result.Value.Status,
-                Winner = result.Value.Winner
+                Winner = result.Value.Winner,
+                Seller = result.Value.Seller,
+                ItemSold = result.Value.SoldAmount > 0
             });
 
-            logger.LogInformation("--> Auction Service: Published {Event} with CorrelationId: {CorrelationId}", nameof(AuctionFinished), context.Message.CorrelationId);
+            logger.LogInformation("--> Auction Service: Published {Event} with CorrelationId: {CorrelationId}", nameof(AuctionMarkFinished), context.Message.CorrelationId);
         }
         catch (Exception e)
         {
-            await publishEndpoint.Publish(new AuctionFinishFailed
+            await publishEndpoint.Publish(new AuctionMarkFinishFailed
             {
                 AuctionId = context.Message.AuctionId,
                 CorrelationId = context.Message.CorrelationId,

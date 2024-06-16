@@ -4,7 +4,7 @@ namespace Hub.Config;
 
 public static class SerilogConfig
 {
-    public static IHostBuilder AddSerilog(this IHostBuilder host, IConfiguration config)
+    public static IHostBuilder AddSerilog(this IHostBuilder host)
     {
         host.UseSerilog((context, loggerConfig) =>
         {

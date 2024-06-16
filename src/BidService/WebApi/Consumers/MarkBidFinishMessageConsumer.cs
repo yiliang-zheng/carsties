@@ -24,6 +24,7 @@ public class MarkBidFinishMessageConsumer(ISender sender, IPublishEndpoint publi
             Winner = auctionDto.Winner,
             ItemSold = auctionDto.ItemSold,
             SoldAmount = auctionDto.SoldAmount,
+            Seller = auctionDto.Seller,
             CreatedDate = DateTimeOffset.UtcNow
         });
 

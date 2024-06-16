@@ -53,9 +53,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "src\BidService\We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Extensions", "src\Common\Shared.Extensions\Shared.Extensions.csproj", "{06CB8389-0916-4CAD-8C76-6EF025E1F388}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NavigationService", "NavigationService", "{030933D7-D76A-4155-9DF3-BF81E1A6D675}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotificationService", "NotificationService", "{030933D7-D76A-4155-9DF3-BF81E1A6D675}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hub", "src\NotificationService\Hub\Hub.csproj", "{BC46902B-C77F-492B-B59A-1A015041AC78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hub", "src\NotificationService\Hub\Hub.csproj", "{BC46902B-C77F-492B-B59A-1A015041AC78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
