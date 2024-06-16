@@ -19,7 +19,7 @@ COPY ["src/AuctionService/Domain/Domain.csproj", "src/AuctionService/Domain/"]
 #Common
 COPY ["src/Common/Shared.Constants/Shared.Constants.csproj", "src/Common/Shared.Constants/"]
 COPY ["src/Common/Shared.Domain/Shared.Domain.csproj", "src/Common/Shared.Domain/"]
-COPY ["src/Common/Shared.Extensions/Shared.Extensions.csproj", "src/Common/Shared.Extensions"]
+COPY ["src/Common/Shared.Extensions/Shared.Extensions.csproj", "src/Common/Shared.Extensions/"]
 #Gateway
 COPY ["src/GatewayService/Web/Web.csproj", "src/GatewayService/Web/"]
 #Identity Server 
