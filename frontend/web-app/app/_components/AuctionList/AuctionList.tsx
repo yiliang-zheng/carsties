@@ -1,8 +1,9 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { trpc } from "@/app/_trpc/client";
 import { useShallow } from "zustand/react/shallow";
 import { useParamsStore } from "@/app/_hooks/useParamsStore";
+import { useAuctionStore } from "@/app/_hooks/useAuctionStore";
 
 import AuctionCard from "@/app/_components/AuctionCard/AuctionCard";
 import Pagination from "@/app/_components/Pagination/Pagniation";
@@ -10,7 +11,7 @@ import PageSize from "@/app/_components/PageSize/PageSize";
 import Filter from "@/app/_components/Filters/Filter";
 import EmptyList from "@/app/_components/EmptyList/EmptyList";
 
-import type { PagedAuction, Auction } from "@/server/schemas/auction";
+import type { PagedAuction } from "@/server/schemas/auction";
 
 type Props = {
   initialAuctions: PagedAuction | undefined;
@@ -30,6 +31,15 @@ const AuctionList = ({ initialAuctions }: Props) => {
   );
   const setParams = useParamsStore((state) => state.setParams);
 
+  const { auctions, pageCount } = useAuctionStore(
+    useShallow((state) => ({
+      auctions: state.auctions,
+      totalCount: state.totalCount,
+      pageCount: state.pageCount,
+    }))
+  );
+  const setAuctions = useAuctionStore((state) => state.setData);
+
   const { data, isLoading, isError } = trpc.auctions.list.useQuery(
     {
       pageNumber: params.pageNumber,
@@ -48,17 +58,11 @@ const AuctionList = ({ initialAuctions }: Props) => {
     }
   );
 
-  const auctions = useMemo(() => {
-    if (!data) return [] as Auction[];
-
-    return data.results;
-  }, [data, isLoading]);
-
-  const totalPages = useMemo(() => {
-    if (!data) return 0;
-
-    return data.pageCount;
-  }, [data]);
+  useEffect(() => {
+    if (!isLoading && !isError) {
+      setAuctions(data);
+    }
+  }, [data, isLoading, isError]);
 
   return (
     <div className="w-full flex flex-col lg:flex-row">
@@ -79,7 +83,7 @@ const AuctionList = ({ initialAuctions }: Props) => {
             <Pagination
               currentPage={params.pageNumber}
               onPageChange={(pageNumber) => setParams({ pageNumber })}
-              totalPages={totalPages}
+              totalPages={pageCount}
             />
             <PageSize
               pageSize={params.pageSize}

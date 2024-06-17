@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useMemo } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { usePathname, useRouter, useParams } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import { useForm } from "react-hook-form";
 
@@ -27,6 +27,7 @@ const AuctionForm = ({ auction }: Props) => {
   });
 
   const pathname = usePathname();
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const trpcUtils = trpc.useUtils();
 
@@ -41,6 +42,12 @@ const AuctionForm = ({ auction }: Props) => {
     isLoading: updateLoading,
     error: updateError,
   } = trpc.auctions.update.useMutation();
+
+  const currentMode = useMemo<FormMode>(() => {
+    //pathname is /auctions/create and auction prop is null
+    if (!auction && pathname === "/auctions/create") return "create";
+    return "edit";
+  }, [auction, pathname]);
 
   const submitCreate = async (payload: CreateAuctionPayload) => {
     await createMutate(payload, {
@@ -109,6 +116,21 @@ const AuctionForm = ({ auction }: Props) => {
     }
   };
 
+  const cancelForm = useCallback(() => {
+    switch (currentMode) {
+      case "create":
+        reset();
+        break;
+      case "edit":
+        router.push(`/auctions/details/${params.id}`, {
+          scroll: true,
+        });
+        break;
+      default:
+        break;
+    }
+  }, [currentMode]);
+
   useEffect(() => {
     setFocus("make");
   }, [setFocus]);
@@ -124,12 +146,6 @@ const AuctionForm = ({ auction }: Props) => {
         mileage: auction.mileage,
       });
     }
-  }, [auction]);
-
-  const currentMode = useMemo<FormMode>(() => {
-    //pathname is /auctions/create and auction prop is null
-    if (!auction && pathname === "/auctions/create") return "create";
-    return "edit";
   }, [auction]);
 
   const submitResult = useMemo(() => {
@@ -238,7 +254,7 @@ const AuctionForm = ({ auction }: Props) => {
         )}
 
         <div className="flex justify-between">
-          <Button type="reset" outline color="dark">
+          <Button type="button" onClick={cancelForm} outline color="dark">
             Cancel
           </Button>
           <Button type="submit" color="dark" isLoading={submitResult.isLoading}>

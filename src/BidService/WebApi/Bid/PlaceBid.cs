@@ -1,4 +1,5 @@
-﻿using Application.PlaceBid;
+﻿using System.Security.Claims;
+using Application.PlaceBid;
 using Domain.Bid.Errors;
 using MediatR;
 
@@ -8,9 +9,10 @@ public class PlaceBid: IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/create", async (ISender sender, PlaceBideRequest request) =>
+        app.MapPost("/create", async (ClaimsPrincipal principal,ISender sender, PlaceBideRequest request) =>
             {
-                var command = new PlaceBidCommand(request.Bidder, request.Amount, request.AuctionId);
+                var currentUser = principal.Identity?.Name!;
+                var command = new PlaceBidCommand(currentUser, request.Amount, request.AuctionId);
                 var result = await sender.Send(command);
                 if (result.IsSuccess) return Results.Ok(result.Value);
 

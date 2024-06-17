@@ -21,7 +21,9 @@ public class DomainToDtoProfile:AutoMapper.Profile
             )
             .ForMember(dest => dest.Finished,
                 opts => opts.MapFrom(src => src.Auction.Finished)
-            );
+            )
+            .ForMember(dest => dest.BidDateTime,
+                opts => opts.MapFrom(src => src.BidTime));
 
         CreateMap<Auction, AuctionDto>()
             .ForMember(dest => dest.AuctionId,

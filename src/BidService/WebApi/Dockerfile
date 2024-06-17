@@ -36,6 +36,8 @@ COPY ["src/BidService/Application/Application.csproj", "src/BidService/Applicati
 COPY ["src/BidService/Infrastructure/Infrastructure.csproj", "src/BidService/Infrastructure/"]
 COPY ["src/BidService/Domain/Domain.csproj", "src/BidService/Domain/"]
 COPY ["src/BidService/WebApi/WebApi.csproj", "src/BidService/WebApi/"]
+#Notification Service
+COPY ["src/NotificationService/Hub/Hub.csproj", "src/NotificationService/Hub/"]
 
 #Restore package deps
 RUN dotnet restore "Carsties.sln"

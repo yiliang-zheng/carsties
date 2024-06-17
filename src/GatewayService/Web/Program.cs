@@ -30,9 +30,20 @@ builder.Services.AddAuthorization(config =>
         policy.RequireAuthenticatedUser();
     });
 });
+builder.Services.AddCors(config =>
+{
+    config.AddPolicy("clientAppPolicy", policy =>
+    {
+        policy.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .WithOrigins(builder.Configuration["ClientApp"]!);
+    });
+});
 
 var app = builder.Build();
 
+app.UseCors();
 app.MapReverseProxy();
 
 app.UseAuthentication();

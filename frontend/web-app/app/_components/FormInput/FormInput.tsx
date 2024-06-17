@@ -1,6 +1,8 @@
 "use client";
 import React, { useMemo } from "react";
 import { useController } from "react-hook-form";
+import { cn } from "@/utils/cn";
+
 import Input from "@/app/_components/Core/Input";
 
 import type { Color } from "@/app/_components/Core/Input";
@@ -11,10 +13,11 @@ type Props = {
   type?: string;
   placeholder?: string;
   showLabel?: boolean;
+  className?: string;
 } & UseControllerProps;
 
 const FormInput = (props: Props) => {
-  const { showLabel, ...inputProps } = props;
+  const { showLabel, className, ...inputProps } = props;
   const { field, fieldState } = useController({
     name: props.name,
     control: props.control,
@@ -34,7 +37,7 @@ const FormInput = (props: Props) => {
   }, [field, fieldState]);
 
   return (
-    <div className="mb-3">
+    <div className={cn("mb-3", className)}>
       {props.showLabel && (
         <div className="mb-2 block">
           <label htmlFor={field.name}>{props.label}</label>

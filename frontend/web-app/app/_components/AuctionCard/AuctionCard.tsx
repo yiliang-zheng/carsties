@@ -1,4 +1,5 @@
 import CountdownTimer from "@/app/_components/CountdownTimer/CountdownTimer";
+import CurrentBid from "@/app/_components/AuctionCard/CurrentBid";
 import AuctionCardImage from "@/app/_components/AuctionCard/AuctionCardImage";
 import Link from "next/link";
 import type { Auction } from "@/server/schemas/auction";
@@ -14,8 +15,14 @@ const AuctionCard = ({ auction }: Props) => {
         <Link href={`/auctions/details/${auction.id}`}>
           <AuctionCardImage imageUrl={auction.imageUrl} title={auction.make} />
         </Link>
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 left-2">
           <CountdownTimer auctionEnd={auction.auctionEnd} />
+        </div>
+        <div className="absolute top-2 right-2">
+          <CurrentBid
+            amount={auction.currentHighBid}
+            reservePrice={auction.reservePrice}
+          />
         </div>
       </figure>
       <div className="card-body">

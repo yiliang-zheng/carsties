@@ -43,9 +43,10 @@ COPY ["src/NotificationService/Hub/Hub.csproj", "src/NotificationService/Hub/"]
 RUN dotnet restore "Carsties.sln"
 
 #Copy the app folders
-COPY ["src/GatewayService/Web", "src/GatewayService/Web"]
-WORKDIR "/src/src/GatewayService/Web"
-RUN dotnet build "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+COPY ["src/Common/Shared.Domain", "src/Common/Shared.Domain"]
+COPY ["src/NotificationService/Hub", "src/NotificationService/Hub"]
+WORKDIR "/src/src/NotificationService/Hub"
+RUN dotnet build "./Hub.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -54,4 +55,4 @@ RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish --no-build /p:UseAppH
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Web.dll"]
+ENTRYPOINT ["dotnet", "Hub.dll"]
