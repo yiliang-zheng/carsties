@@ -1,9 +1,12 @@
 ﻿using Domain.ApplicationUser;
+using Domain.Grant;
 using Infrastructure.Data;
+using Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Domain.Interface;
 
 namespace Infrastructure;
 
@@ -15,6 +18,8 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
         );
+
+        services.AddScoped<IRepository<Grant>, GrantRepository>();
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()

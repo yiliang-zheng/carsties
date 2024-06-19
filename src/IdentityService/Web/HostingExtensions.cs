@@ -37,7 +37,8 @@ namespace Web
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddProfileService<CarstiesProfileService>();
+                .AddProfileService<CarstiesProfileService>()
+                .AddPersistedGrantStore<CarstiesPersistedGrantStore>();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {

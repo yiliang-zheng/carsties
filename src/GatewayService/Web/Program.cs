@@ -20,7 +20,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,
-            NameClaimType = "username"
+            ValidateIssuer = false,
+            NameClaimType = "username",
         };
     });
 builder.Services.AddAuthorization(config =>

@@ -28,14 +28,15 @@ namespace Web.Pages.Account.Register
         [BindProperty]
         public bool RegisterSuccess { get; set; }
 
-        public async Task<IActionResult> OnGet(string returnUrl)
+        public Task<IActionResult> OnGet(string returnUrl)
         {
             Input = new InputModel
             {
                 ReturnUrl = returnUrl
             };
 
-            return Page();
+            IActionResult result = Page();
+            return Task.FromResult(result);
         }
 
         public async Task<IActionResult> OnPost()

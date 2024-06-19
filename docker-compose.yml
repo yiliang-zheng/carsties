@@ -3,6 +3,7 @@ services:
     image: postgres
     environment:
       - POSTGRES_PASSWORD=postgrespw
+    restart: unless-stopped
     ports:
       - 5432:5432
     volumes:
@@ -12,12 +13,14 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=mongopw
+    restart: unless-stopped
     ports:
       - 27017:27017
     volumes:
       - mongodata:/data/db
   rabbitmq:
     image: rabbitmq:3-management-alpine
+    restart: unless-stopped
     ports:
       - 5672:5672
       - 15672:15672
@@ -28,6 +31,7 @@ services:
     build:
       context: .
       dockerfile: src/AuctionService/WebApi/Dockerfile
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
@@ -51,6 +55,7 @@ services:
     build:
       context: .
       dockerfile: src/BidService/WebApi/Dockerfile
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
@@ -70,6 +75,7 @@ services:
     build:
       context: .
       dockerfile: src/NotificationService/Hub/Dockerfile
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
@@ -85,6 +91,7 @@ services:
     build:
       context: .
       dockerfile: src/SearchService/WebApi/Dockerfile
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
@@ -103,6 +110,7 @@ services:
     build:
       context: .
       dockerfile: src/IdentityService/Web/Dockerfile
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8080
@@ -116,6 +124,7 @@ services:
     build:
       context: .
       dockerfile: src/GatewayService/Web/Dockerfile
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8080
@@ -126,6 +135,7 @@ services:
     build:
       context: .
       dockerfile: src/StateMachine/SagaOrchestration/Dockerfile
+    restart: unless-stopped
     environment:
       - DOTNET_ENVIRONMENT=Development
       - RabbitMq__Host=rabbitmq

@@ -49,6 +49,7 @@ COPY ["src/IdentityService/Infrastructure", "src/IdentityService/Infrastructure"
 COPY ["src/IdentityService/Domain", "src/IdentityService/Domain"]
 COPY ["src/Common/Shared.Domain", "src/Common/Shared.Domain"]
 COPY ["src/Common/Shared.Extensions", "src/Common/Shared.Extensions"]
+COPY ["src/Common/Shared.Constants", "src/Common/Shared.Constants"]
 WORKDIR "/src/src/IdentityService/Web"
 RUN dotnet build "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

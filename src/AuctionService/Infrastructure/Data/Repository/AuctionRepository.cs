@@ -50,6 +50,18 @@ public class AuctionRepository : IRepository<Auction>
         this._dbContext.Auctions.Remove(entity);
     }
 
+    public async Task DeleteRangeAsync(IEnumerable<Auction> entities, CancellationToken cancellationToken = default)
+    {
+        var auctions = entities.ToArray();
+        var ids = auctions.Select(p => p.Id).ToList();
+        var items = await _dbContext.Items.Where(p => ids.Contains(p.AuctionId)).ToListAsync(cancellationToken);
+        if (items.Count > 0)
+        {
+            this._dbContext.Items.RemoveRange(items);
+        }
+        _dbContext.Auctions.RemoveRange(auctions);
+    }
+
     private IQueryable<Auction> ApplySpecification(ISpecification<Auction> specification)
     {
         return SpecificationEvaluator.Default.GetQuery(this._dbContext.Set<Auction>().AsQueryable(), specification);

@@ -44,6 +44,12 @@ public class BidRepository : IBidRepository
         return Task.CompletedTask;
     }
 
+    public Task DeleteRangeAsync(IEnumerable<Bid> entities, CancellationToken cancellationToken = default)
+    {
+        _context.Bids.RemoveRange(entities);
+        return Task.CompletedTask;
+    }
+
     public async Task<Auction?> GetAuctionById(ISpecification<Auction> spec)
     {
         var result = await ApplySpecification(spec).FirstOrDefaultAsync();
