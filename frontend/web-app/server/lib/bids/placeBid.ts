@@ -20,7 +20,6 @@ export const placeBid = async (
       accessToken
     );
   } catch (error) {
-    console.log(error);
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: getErrorMessage(error),

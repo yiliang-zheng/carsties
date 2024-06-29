@@ -5,6 +5,7 @@ import { useBidStore } from "@/app/_hooks/useBidStore";
 
 import FormInput from "@/app/_components/FormInput/FormInput";
 import Button from "@/app/_components/Core/Button";
+import Alert from "@/app/_components/Core/Alert";
 
 import type { FieldValues } from "react-hook-form";
 
@@ -17,8 +18,8 @@ const BidForm = ({ auctionId, currentHighBid }: Props) => {
   const {
     mutate: placeBidMutate,
     isLoading,
-    isSuccess,
     error,
+    reset: mutationReset,
   } = trpc.bids.placeBid.useMutation();
 
   const {
@@ -41,30 +42,42 @@ const BidForm = ({ auctionId, currentHighBid }: Props) => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-row gap-2 justify-between items-center border-2 rounded-lg py-2"
-    >
-      <FormInput
-        type="number"
-        name="bidAmount"
-        control={control}
-        label="Bid amount"
-        placeholder={`Enter your bid (minimum bid is $${
-          currentHighBid ?? 0 + 1
-        })`}
-        className="grow"
-      />
+    <>
+      {!!error && <Alert type="error" title={error.message} className="m-2" />}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-row gap-2 justify-between items-start border-2 rounded-lg p-2"
+      >
+        <FormInput
+          type="number"
+          name="bidAmount"
+          control={control}
+          label="Bid amount"
+          placeholder={`Enter your bid (minimum bid is $${
+            currentHighBid ?? 0 + 1
+          })`}
+          className="grow"
+          rules={{ required: "bid amount is required" }}
+        />
 
-      <div className="flex justify-between">
-        <Button type="button" onClick={reset} outline color="dark">
-          Cancel
-        </Button>
-        <Button type="submit" color="dark" isLoading={isLoading}>
-          Submit
-        </Button>
-      </div>
-    </form>
+        <div className="flex justify-between">
+          <Button
+            type="button"
+            onClick={() => {
+              reset();
+              mutationReset();
+            }}
+            outline
+            color="dark"
+          >
+            Cancel
+          </Button>
+          <Button type="submit" color="dark" isLoading={isLoading}>
+            Submit
+          </Button>
+        </div>
+      </form>
+    </>
   );
 };
 

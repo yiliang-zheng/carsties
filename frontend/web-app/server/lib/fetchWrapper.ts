@@ -17,7 +17,8 @@ function constructHeaders(accessToken?: string): Record<string, string> {
 async function handleResponse<T>(response: Response): Promise<T> {
   try {
     if (!response.ok) {
-      throw new Error(response.statusText);
+      var error = await response.json();
+      throw new Error(error ?? response.statusText);
     }
 
     const data = (await response.json()) as T;

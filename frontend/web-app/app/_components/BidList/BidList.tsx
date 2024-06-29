@@ -3,13 +3,21 @@ import { trpc } from "@/app/_trpc/client";
 import { useParams } from "next/navigation";
 import { useBidStore } from "@/app/_hooks/useBidStore";
 import { useShallow } from "zustand/react/shallow";
+import { useSession } from "next-auth/react";
 
 import BidItem from "@/app/_components/BidItem/BidItem";
 import Heading from "@/app/_components/Core/Heading";
 import EmptyList from "@/app/_components/EmptyList/EmptyList";
 import BidForm from "@/app/_components/BidForm/BidForm";
 
-const BidList = () => {
+import type { Auction } from "@/server/schemas/auction";
+
+type Props = {
+  auction: Auction;
+};
+
+const BidList = ({ auction }: Props) => {
+  const { data: session } = useSession();
   const params = useParams<{ id: string }>();
   const bidsStore = useBidStore(
     useShallow((state) => ({
@@ -71,7 +79,23 @@ const BidList = () => {
       </div>
 
       <div className="px-2 pb-2 text-gray-500">
-        <BidForm auctionId={params.id} currentHighBid={currentHighestBid} />
+        {(!session || !session.user) && (
+          <div className="flex items-center justify-center p-2 text-lg font-semibold">
+            Please login to make a bid{" "}
+          </div>
+        )}
+        {!!session &&
+          !!session.user &&
+          session.user.username === auction.seller && (
+            <div className="flex items-center justify-center p-2 text-lg font-semibold">
+              You cannot bid on your own auction
+            </div>
+          )}
+        {!!session &&
+          !!session.user &&
+          session.user.username !== auction.seller && (
+            <BidForm auctionId={params.id} currentHighBid={currentHighestBid} />
+          )}
       </div>
     </div>
   );
