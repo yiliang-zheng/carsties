@@ -1,4 +1,4 @@
-import { boolean, z } from "zod";
+import { z } from "zod";
 
 export const bidStatus = [
   "accepted",
@@ -13,12 +13,15 @@ export const bidSchema = z.object({
   bidder: z.string(),
   bidDateTime: z.string().datetime({ offset: true }),
   amount: z.number().positive(),
-  bidStatus: z.string(),
+  bidStatus: z.string().transform((val) => {
+    const status = bidStatus.find((p) => p === val.toLowerCase());
+    return status;
+  }),
   auctionId: z.string().uuid(),
   auctionEnd: z.string().datetime({ offset: true }),
   seller: z.string().nullish(),
   reservePrice: z.number().nullish(),
-  finished: boolean().nullish(),
+  finished: z.boolean().nullish(),
 });
 
 export const bidArraySchema = z.array(bidSchema);

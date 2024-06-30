@@ -3,6 +3,7 @@ import "./globals.css";
 import TRPCReactProvider from "@/app/_trpc/Provider";
 import SessionProvider from "@/app/_providers/SessionProvider";
 import ToasterProvider from "@/app/_providers/ToasterProvider";
+import SignalRProvider from "@/app/_providers/SignalRProvider";
 
 import Navbar from "@/app/_components/Navbar/Navbar";
 
@@ -23,7 +24,9 @@ export default function RootLayout({
           <SessionProvider>
             <ToasterProvider />
             <Navbar />
-            <main className="container mx-auto px-5 pt-10">{children}</main>
+            <SignalRProvider>
+              <main className="container mx-auto px-5 pt-10">{children}</main>
+            </SignalRProvider>
           </SessionProvider>
         </TRPCReactProvider>
       </body>

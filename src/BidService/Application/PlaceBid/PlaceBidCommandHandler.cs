@@ -56,9 +56,7 @@ public class PlaceBidCommandHandler(IBidRepository bidRepository, IUnitOfWork un
 
     private Result<Bid> CreateBid(Auction auction, List<Bid> currentBids, PlaceBidCommand request)
     {
-        var bid = new Bid(Guid.NewGuid(), request.Bidder, DateTimeOffset.UtcNow, request.Amount, auction.Id);
-        bid.SetAuction(auction);
-        bid.SetBidStatus(currentBids);
+        var bid = Bid.Create(request.Bidder, DateTimeOffset.UtcNow, request.Amount, auction, currentBids);
 
         return Result.Ok(bid);
     }

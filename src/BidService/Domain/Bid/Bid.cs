@@ -30,9 +30,11 @@ public class Bid : EntityBase, IAggregateRoot, IAuditableEntity
         AuctionId = Guard.Against.Default(auctionId);
     }
 
-    public static Bid Create(string bidder, DateTimeOffset bidTime, int amount, Guid auctionId)
+    public static Bid Create(string bidder, DateTimeOffset bidTime, int amount, Auction auction, List<Bid> currentBids)
     {
-        var bid = new Bid(Guid.NewGuid(), bidder, bidTime, amount, auctionId);
+        var bid = new Bid(Guid.NewGuid(), bidder, bidTime, amount, auction.Id);
+        bid.SetAuction(auction);
+        bid.SetBidStatus(currentBids);
         bid.RegisterDomainEvent(new BidPlaced
         {
             BidId = bid.Id,
@@ -40,7 +42,11 @@ public class Bid : EntityBase, IAggregateRoot, IAuditableEntity
             AuctionId = bid.AuctionId,
             Bidder = bid.Bidder,
             BidStatus = bid.BidStatus.Name,
-            BidTime = bid.BidTime
+            BidDateTime = bid.BidTime,
+            Seller = bid.Auction.Seller,
+            AuctionEnd = bid.Auction.AuctionEnd,
+            Finished = bid.Auction.Finished,
+            ReservePrice = bid.Auction.ReservePrice
         });
 
         return bid;

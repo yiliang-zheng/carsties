@@ -7,7 +7,6 @@ import type { Auction } from "@/server/schemas/auction";
 export const get = async (id: string): Promise<Auction> => {
   let data: Auction;
   try {
-    console.log("id: ", id);
     data = await fetchWrapper.get<Auction>(`auctions/${id}`);
   } catch (error) {
     console.log(error);
