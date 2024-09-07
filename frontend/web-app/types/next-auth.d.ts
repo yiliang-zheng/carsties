@@ -7,6 +7,9 @@ declare module "next-auth" {
       username: string;
     } & DefaultSession["user"];
     error?: string;
+    accessToken: string;
+    accessTokenExpires: number;
+    refreshToken: string;
   }
 
   interface Profile {

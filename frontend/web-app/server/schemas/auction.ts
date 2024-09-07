@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createPagedResultSchema } from "@/server/schemas/pagedResult";
 
-const auctionStatus = z.enum(["Live", "Finished", "Reserve Not Met"]);
+export const auctionStatus = z.enum(["Live", "Finished", "Reserve Not Met"]);
 
 export const auctionSchema = z.object({
   id: z.string(),

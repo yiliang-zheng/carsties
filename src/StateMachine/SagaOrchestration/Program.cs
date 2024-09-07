@@ -65,18 +65,19 @@ builder.Services.AddHostedService<Worker>();
 var host = builder
     .Build();
 
-//if (builder.Environment.IsDevelopment())
-//{
-//    try
-//    {
-//        var dbContext = host.Services.GetRequiredService<StateMachineDbContext>();
-//        await dbContext.Database.MigrateAsync();
-//    }
-//    catch (Exception e)
-//    { 
-//        Log.Logger.Error("Error occurred during database migration: {Exception}", e);
-//    }
-    
-//}
+if (builder.Environment.IsDevelopment())
+{
+    try
+    {
+        using var scope = host.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<StateMachineDbContext>();
+        await dbContext.Database.MigrateAsync();
+    }
+    catch (Exception e)
+    {
+        Log.Logger.Error("Error occurred during database migration: {Exception}", e);
+    }
+
+}
 
 host.Run();

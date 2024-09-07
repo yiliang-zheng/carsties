@@ -115,10 +115,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;User ID=postgres;Password=postgrespw;Database=identity
-    ports:
-      - 5000:8080
+      - IssuerUrl=https://id.carsties.com
+      - RedirectUris__Clients__NextApp=https://app.carsties.com
+      - VIRTUAL_HOST=id.carsties.com
+      - VIRTUAL_PORT=8080          
     depends_on:
       - postgres
+
   gateway-svc:
     image: yiliangzheng0729/carsties-gateway-svc:latest
     build:
@@ -128,8 +131,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8080
-    ports:
-      - 6001:8080
+      - VIRTUAL_HOST=api.carsties.com
+      - ClientApp=https://app.carsties.com
+      - VIRTUAL_PORT=8080          
+      
   state-machine-svc:
     image: yiliangzheng0729/carsties-state-machine-svc:latest
     build:
@@ -143,7 +148,35 @@ services:
     depends_on:
       - rabbitmq
       - postgres
+  web-app:
+    image: yiliangzheng0729/carsties-web-app:latest
+    build: 
+      context: .
+      dockerfile: frontend/web-app/Dockerfile        
+    environment:
+      - AUTH_URL=https://app.carsties.com
+      - AUTH_URL_INTERNAL=http://web-app:3000
+      - AUTH_SECRET=ajCMxIGFuY0SdA4p/nnb5VxylGjqCDqtowW1eRPoiUw=
+      - BACKEND_URL=http://gateway-svc:8080/
+      - IDENTITY_SERVER_URL=https://id.carsties.com
+      - IDENTITY_SERVER_URL_INTERNAL=http://identity-svc:8080
+      - IDENTITY_SERVER_CLIENT_ID=nextApp
+      - IDENTITY_SERVER_ClIENT_SECRET=secret
+      - SIGNALR_URL=https://api.carsties.com/notifications
+      - SERVER_URL=https://app.carsties.com
+      - VIRTUAL_HOST=app.carsties.com      
+      - VIRTUAL_PORT=3000      
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./infrastructure/devcerts:/etc/nginx/certs      
+
 volumes:
   pgdata:
   mongodata:
-  rabbitmqdata:
+  rabbitmqdata:  

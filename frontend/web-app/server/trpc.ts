@@ -2,17 +2,21 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { getSession } from "@/server/lib/auth/getSession";
 import { getCurrentUser } from "@/server/lib/auth/getCurrentUser";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 
 import type { Session } from "next-auth";
 import type { NextRequest } from "next/server";
+import { refreshAccessToken } from "./lib/auth/refreshAccessToken";
 
 type CreateContextOptions = {
   session: Session | null | undefined;
-  user: {
-    name: string | null;
-    email: string | null;
-  } | null;
+  user:
+    | {
+        name: string | null;
+        email: string | null;
+      }
+    | null
+    | undefined;
   accessToken: string | null | undefined;
 };
 
@@ -25,14 +29,16 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
 };
 
 export const createTRPCContext = async (opts: { req: NextRequest }) => {
-  const session = await getSession();
-  const user = await getCurrentUser();
-  const token = await getToken({ req: opts.req });
+  let session = await getSession();
+  //access token expired, rotate access token by refresh token
+  if (!!session && session.accessTokenExpires < new Date().getTime()) {
+    session = await refreshAccessToken(session);
+  }
 
   return createInnerTRPCContext({
     session,
-    user,
-    accessToken: token?.accessToken,
+    user: { name: session?.user.name ?? "", email: session?.user.email ?? "" },
+    accessToken: session?.accessToken,
   });
 };
 

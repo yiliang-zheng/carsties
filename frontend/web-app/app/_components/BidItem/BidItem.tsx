@@ -12,7 +12,7 @@ const BidItem = ({ bid }: Props) => {
   const getBidInfo = useCallback<
     () => { bgColor: string; text: string }
   >(() => {
-    const bidStatus = bid.bidStatus.toLowerCase() as BidStatus;
+    const bidStatus = bid.bidStatus?.toLowerCase() as BidStatus;
     switch (bidStatus) {
       case "accepted":
         return {

@@ -1,4 +1,4 @@
-import { CallbacksOptions } from "next-auth";
+import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 
 type RefreshTokenResponse = {
@@ -9,23 +9,26 @@ type RefreshTokenResponse = {
   refresh_token?: string;
   scope?: string;
 };
-export async function refreshAccessToken(token: JWT): Promise<JWT> {
+export async function refreshAccessToken<T extends JWT | Session>(
+  token: T
+): Promise<T> {
   try {
-    const url = process.env.IDENTITY_SERVER_URL + "/connect/token";
+    const url = process.env.IDENTITY_SERVER_URL_INTERNAL + "/connect/token";
 
-    const payload = new URLSearchParams({
-      client_id: process.env.IDENTITY_SERVER_CLIENT_ID ?? "",
-      client_secret: process.env.IDENTITY_SERVER_CLIENT_SECRET ?? "",
+    const payload = {
+      client_id: process.env.IDENTITY_SERVER_CLIENT_ID!,
+      client_secret: process.env.IDENTITY_SERVER_ClIENT_SECRET!,
       grant_type: "refresh_token",
       refresh_token: token.refreshToken,
-    });
+    };
 
+    console.log("payload: ", JSON.stringify(payload));
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       method: "POST",
-      body: payload,
+      body: new URLSearchParams(payload),
     });
 
     if (!response.ok) throw new Error(response.statusText);

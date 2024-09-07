@@ -14,7 +14,9 @@ type Props = {
   currentHighBid?: number | null;
 };
 const BidForm = ({ auctionId, currentHighBid }: Props) => {
-  const addBid = useBidStore((state) => state.addBid);
+  const { addBid } = useBidStore((state) => ({
+    addBid: state.addBid,
+  }));
   const {
     mutate: placeBidMutate,
     isLoading,
@@ -36,7 +38,10 @@ const BidForm = ({ auctionId, currentHighBid }: Props) => {
         amount: Number(data["bidAmount"]),
       },
       {
-        onSuccess: (bid) => addBid(bid),
+        onSuccess: (bid) => {
+          addBid(bid);
+          reset();
+        },
       }
     );
   };

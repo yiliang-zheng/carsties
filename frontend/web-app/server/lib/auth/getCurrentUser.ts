@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 
 export type User = {
   name: string;
@@ -8,7 +7,7 @@ export type User = {
 };
 export const getCurrentUser = async (): Promise<User | null> => {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session || !session.user) return null;
 
     const result: User = {

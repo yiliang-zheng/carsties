@@ -44,7 +44,7 @@ const AuctionDetail = ({ auction, id }: Props) => {
         <div className="w-full bg-gray-200 aspect-h-10 aspect-w-16 rounded-lg overflow-hidden">
           <AuctionCardImage imageUrl={data.imageUrl} title={data.model} />
         </div>
-        <BidList auction={auction} />
+        <BidList auction={data} />
       </div>
 
       <div className="mt-3 grid grid-cols-1 rounded-lg">

@@ -12,14 +12,14 @@ namespace Web
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
-            new ApiScope[]
+            new[]
             {
                 new ApiScope("auctionSvc", "Auction Web Service"),
                 new ApiScope("bidSvc", "Bidding Web Service")
             };
 
-        public static IEnumerable<Client> Clients =>
-            new Client[]
+        public static IEnumerable<Client> Clients(IConfiguration config) =>
+            new[]
             {
                 new Client
                 {
@@ -48,7 +48,7 @@ namespace Web
                     RequirePkce = false,
                     RedirectUris =
                     {
-                        "http://localhost:3000/api/auth/callback/id-server"
+                        $"{config["RedirectUris:Clients:NextApp"]}/api/auth/callback/id-server"
                     },
                     AllowOfflineAccess = true,
                     AllowedScopes = {"openid", "profile", "auctionSvc", "bidSvc", "offline_access"},

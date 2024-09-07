@@ -8,6 +8,7 @@ export const get = async (id: string): Promise<Auction> => {
   let data: Auction;
   try {
     data = await fetchWrapper.get<Auction>(`auctions/${id}`);
+    console.log(data);
   } catch (error) {
     console.log(error);
     throw new TRPCError({

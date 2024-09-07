@@ -1,17 +1,8 @@
-"use client";
+import { cookies } from "next/headers";
 
-import Button from "@/app/_components/Core/Button";
-import { signIn } from "next-auth/react";
-const LoginButton = () => {
-  return (
-    <Button
-      outline
-      children="Login"
-      color="dark"
-      onClick={() => signIn("id-server", { callbackUrl: "/" })}
-    />
-  );
-};
+import SignIn from "@/app/_components/LoginButton/SignIn";
 
-LoginButton.displayName = "LoginButton";
-export default LoginButton;
+export default async function LoginButton() {
+  const csrfToken = cookies().get("authjs.csrf-token")?.value ?? "";
+  return <SignIn csrfToken={csrfToken} />;
+}

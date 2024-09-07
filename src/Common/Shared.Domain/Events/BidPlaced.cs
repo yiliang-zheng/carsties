@@ -2,7 +2,7 @@
 
 public class BidPlaced : DomainEventBase
 {
-    public Guid BidId { get; init; }
+    public Guid Id { get; init; }
 
     public Guid AuctionId { get; init; }
 

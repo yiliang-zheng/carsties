@@ -17,7 +17,13 @@ function constructHeaders(accessToken?: string): Record<string, string> {
 async function handleResponse<T>(response: Response): Promise<T> {
   try {
     if (!response.ok) {
-      var error = await response.json();
+      let error;
+
+      try {
+        error = await response.json();
+      } catch {
+        error = response.statusText;
+      }
       throw new Error(error ?? response.statusText);
     }
 

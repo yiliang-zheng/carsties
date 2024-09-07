@@ -16,7 +16,7 @@ const AuctionCreatedToast = ({ auction }: Props) => {
     >
       <div className="flex flex-row items-center gap-2">
         <Image
-          src={auction.imageUrl}
+          src={auction.imageUrl ?? ""}
           alt="image"
           height={80}
           width={80}

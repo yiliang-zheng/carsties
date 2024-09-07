@@ -25,17 +25,13 @@ namespace Web
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
-                    if (builder.Environment.IsEnvironment("Docker"))
-                    {
-                        options.IssuerUri = "http://identity-svc:8080";
-                    }
-
+                    options.IssuerUri = builder.Configuration["IssuerUrl"];
                     // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
                     //options.EmitStaticAudienceClaim = true;
                 })
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
-                .AddInMemoryClients(Config.Clients)
+                .AddInMemoryClients(Config.Clients(builder.Configuration))
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<CarstiesProfileService>()
                 .AddPersistedGrantStore<CarstiesPersistedGrantStore>();

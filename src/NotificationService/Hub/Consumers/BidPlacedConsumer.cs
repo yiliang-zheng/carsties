@@ -10,7 +10,6 @@ public class BidPlacedConsumer(IHubContext<NotificationHub, INotificationHubClie
     public async Task Consume(ConsumeContext<BidPlaced> context)
     {
         logger.LogInformation("--> bid placed message received from {Consumer}", typeof(AuctionCreatedConsumer).FullName);
-
         await hubContext.Clients.All.ReceiveBidPlacedNotification(context.Message);
     }
 }

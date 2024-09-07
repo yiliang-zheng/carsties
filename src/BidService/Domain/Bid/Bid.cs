@@ -37,7 +37,7 @@ public class Bid : EntityBase, IAggregateRoot, IAuditableEntity
         bid.SetBidStatus(currentBids);
         bid.RegisterDomainEvent(new BidPlaced
         {
-            BidId = bid.Id,
+            Id = bid.Id,
             Amount = bid.Amount,
             AuctionId = bid.AuctionId,
             Bidder = bid.Bidder,
