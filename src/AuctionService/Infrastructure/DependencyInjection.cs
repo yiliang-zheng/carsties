@@ -5,6 +5,8 @@ using Infrastructure.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
+using Polly;
 using Shared.Domain.Interface;
 
 namespace Infrastructure
@@ -33,7 +35,11 @@ namespace Infrastructure
             var initializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
             if (initializer is not null)
             {
-                await initializer.Initialize();
+                var retryPolicy = Policy.Handle<NpgsqlException>().WaitAndRetryAsync(5, _ => TimeSpan.FromSeconds(5));
+                await retryPolicy.ExecuteAsync(async () =>
+                {
+                    await initializer.Initialize();
+                });
             }
         }
     }

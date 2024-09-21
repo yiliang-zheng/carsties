@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.IO.Compression;
 using System.Reflection;
+using Npgsql;
+using Npgsql.Util;
+using Polly;
 using WebApi.Consumer;
 using WebApi.Grpc;
 

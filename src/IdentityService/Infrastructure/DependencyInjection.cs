@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
+using Polly;
 using Shared.Domain.Interface;
 
 namespace Infrastructure;
@@ -35,7 +37,11 @@ public static class DependencyInjection
         var initializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
         if (initializer is not null)
         {
-            await initializer.Seed();
+            var retryPolicy = Policy.Handle<NpgsqlException>().WaitAndRetryAsync(5, _ => TimeSpan.FromSeconds(5));
+            await retryPolicy.ExecuteAsync(async () =>
+            {
+                await initializer.Seed();
+            });
         }
 
     }

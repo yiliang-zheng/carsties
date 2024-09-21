@@ -110,15 +110,11 @@ var app = builder.Build();
 app.UseFastEndpoints();
 app.Lifetime.ApplicationStarted.Register(async () =>
 {
-    try
+    var retryPolicy = Policy.Handle<TimeoutException>().WaitAndRetryAsync(5, _ => TimeSpan.FromSeconds(5));
+    await retryPolicy.ExecuteAsync(async () =>
     {
         await DatabaseInitializer.InitDb(app);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex);
-        //ignored
-    }
+    });
 });
 
 

@@ -1,6 +1,8 @@
 using System.Reflection;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using Polly;
 using SagaOrchestration;
 using SagaOrchestration.DbContext;
 using SagaOrchestration.StateInstances;
@@ -69,9 +71,15 @@ if (builder.Environment.IsDevelopment())
 {
     try
     {
+
         using var scope = host.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<StateMachineDbContext>();
-        await dbContext.Database.MigrateAsync();
+        var retryPolicy = Policy.Handle<NpgsqlException>().WaitAndRetryAsync(5, _ => TimeSpan.FromSeconds(5));
+        await retryPolicy.ExecuteAsync(async () =>
+        {
+            await dbContext.Database.MigrateAsync();
+        });
+
     }
     catch (Exception e)
     {

@@ -4,21 +4,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Data;
 
-public class DatabaseInitializer
+public class DatabaseInitializer(AppDbContext dbContext, ILogger<DatabaseInitializer> logger)
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILogger<DatabaseInitializer> _logger;
-
-    public DatabaseInitializer(AppDbContext dbContext, ILogger<DatabaseInitializer> logger)
-    {
-        _dbContext = dbContext;
-        _logger = logger;
-    }
     public async Task Initialize()
     {
         try
         {
-            await this._dbContext.Database.MigrateAsync();
+            await dbContext.Database.MigrateAsync();
 
             // 1 Ford GT
             var fordGt = new Auction(
@@ -220,17 +212,17 @@ public class DatabaseInitializer
             );
             await this.SeedData(fordModelT);
 
-            await this._dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error occurred during initialize database");
+            logger.LogError(e, "Error occurred during initialize database");
         }
     }
 
     private async Task SeedData(Auction auction)
     {
-        if (await this._dbContext.Auctions.AnyAsync(p => p.Seller == auction.Seller &&
+        if (await dbContext.Auctions.AnyAsync(p => p.Seller == auction.Seller &&
                                                          p.ReservePrice == auction.ReservePrice &&
                                                          p.Item.Make == auction.Item.Make &&
                                                          p.Item.Model == auction.Item.Model &&
@@ -239,6 +231,6 @@ public class DatabaseInitializer
                                                          p.Item.Year == auction.Item.Year))
             return;
 
-        await this._dbContext.Auctions.AddAsync(auction);
+        await dbContext.Auctions.AddAsync(auction);
     }
 }

@@ -6,6 +6,8 @@ using Infrastructure.Grpc;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using Polly;
 using WebApi.Consumers;
 using WebApi.Extensions;
 
@@ -89,7 +91,11 @@ namespace WebApi
 
             if (!app.Environment.IsProduction())
             {
-                await app.Services.MigrateDatabase();
+                var retryPolicy = Policy.Handle<NpgsqlException>().WaitAndRetryAsync(5, _ => TimeSpan.FromSeconds(5));
+                await retryPolicy.ExecuteAsync(async () =>
+                {
+                    await app.Services.MigrateDatabase();
+                });
             }
             
             await app.RunAsync();
