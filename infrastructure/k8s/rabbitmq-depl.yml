@@ -1,34 +1,60 @@
-apiVersion: rabbitmq.com/v1beta1
-kind: RabbitmqCluster
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  labels:
-    app: rabbitmq
-  name: rabbitmq
-  namespace: carsties
+  name: rabbitmq-depl
 spec:
-  replicas: 1  
-  service:
-    type: ClusterIP
-  persistence:
-    storageClassName: ebs-sc
-    storage: 10Gi
-  resources:
-    requests:
-      cpu: 1000m
-      memory: 2Gi
-    limits:
-      cpu: 1000m
-      memory: 2Gi
-  rabbitmq:    
-    additionalConfig: |
-      cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
-      cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
-      cluster_formation.k8s.address_type = hostname
-      vm_memory_high_watermark_paging_ratio = 0.85
-      cluster_formation.node_cleanup.interval = 10
-      cluster_partition_handling = autoheal
-      queue_master_locator = min-masters
-      loopback_users = none
-      default_user = admin
-      default_pass = Password123$
-    advancedConfig: ""
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management-alpine        
+        env:
+          - name: RABBITMQ_DEFAULT_USER
+            value: rabbit
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: rabbitmq-secret
+        ports:
+          - containerPort: 5672
+            name: rabbitmq-port
+          - containerPort: 15672
+            name: mgmt-port
+        volumeMounts:
+          - mountPath: /var/lib/rabbitmq
+            name: rabbitmqdata
+      volumes:
+        - name: rabbitmqdata
+          persistentVolumeClaim: 
+            claimName: rabbitmq-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-clusterip
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - port: 5672
+    targetPort: 5672
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-np
+spec:
+  type: NodePort
+  selector:
+    app: rabbitmq
+  ports:
+    - port: 15672
+      targetPort: 15672
+      nodePort: 30002

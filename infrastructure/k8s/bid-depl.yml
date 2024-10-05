@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bid-depl
+spec:
+  selector:
+    matchLabels:
+      app: bid-svc
+  template:
+    metadata:
+      labels:
+        app: bid-svc
+    spec:
+      containers:
+      - name: bid-svc
+        image: yiliangzheng0729/carsties-bid-svc        
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: bid-svc-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bid-clusterip
+spec:
+  type: ClusterIP
+  selector:
+    app: bid-svc
+  ports:
+  - port: 8080
+    targetPort: 8080
+          

@@ -1,0 +1,5 @@
+{
+  "yaml.schemas": {
+    "kubernetes://schema/v1%40service": "file:///c%3A/Users/virgi/Documents/Repo/carsties/infrastructure/k8s/search-depl.yml"
+  }
+}

@@ -97,10 +97,7 @@ app.UseFastEndpoints();
 app.MapGrpcService<GrpcAuctionService>();
 
 //seed data
-if (!app.Environment.IsProduction())
-{
-    await app.Services.InitializeDatabase();
-}
+await app.Services.InitializeDatabase();
 app.Run();
 
 
