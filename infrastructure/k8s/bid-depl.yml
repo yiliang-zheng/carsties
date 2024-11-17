@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: bid-svc
-        image: yiliangzheng0729/carsties-bid-svc        
+        image: yiliangzheng0729/carsties-bids-svc        
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
