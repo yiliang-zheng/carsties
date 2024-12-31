@@ -58,3 +58,11 @@ data:
   RabbitMq__Host: rabbitmq-clusterip
   RabbitMq__Username: rabbit
   RabbitMq__Password: rabbitpw
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-svc-config
+data:
+  ClientApp: https://app.carsties.com
+  IdentityService__Authority: http://identity-clusterip:8080
